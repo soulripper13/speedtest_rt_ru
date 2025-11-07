@@ -160,6 +160,7 @@ class SpeedtestSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Speedtest RT.RU sensor."""
 
     _attr_has_entity_name = True
+    _attr_should_poll = False  # Rely on coordinator
 
     def __init__(
         self,
@@ -174,12 +175,21 @@ class SpeedtestSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> StateType | str | None:
         """Return the state."""
-        if (value := self.coordinator.data.get(self.entity_description.key)) != "unknown":
-            try:
-                return round(float(value), 2) if "." in str(value) else int(value)
-            except ValueError:
-                pass
-        return value
+        value = self.coordinator.data.get(self.entity_description.key)
+        if value == "unknown":
+            # For numeric sensors (has unit), return None to mark unavailable
+            if self.entity_description.native_unit_of_measurement:
+                return None
+            # For strings (no unit), return 'unknown'
+            return value
+
+        # Parse to number if possible
+        try:
+            parsed = float(value)
+            return round(parsed, 2) if "." in str(value) else int(parsed)
+        except ValueError:
+            # Fallback to string (e.g., ISP name)
+            return value
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
