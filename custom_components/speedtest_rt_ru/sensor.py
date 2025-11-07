@@ -109,7 +109,7 @@ class SpeedtestSensorData:
             self.data = _parse_output(output)
         except Exception as err:
             _LOGGER.error("Error running QMS binary: %s", err)
-            self.data = {key: "unknown" for key in SENSORS}
+            self.data = {key: "unknown" for key in [desc.key for desc in SENSORS]}
 
     @property
     def scan_interval(self) -> timedelta | None:
@@ -123,12 +123,19 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Speedtest RT.RU sensors."""
+    # Get shared data (binary_path) from hass.data
     hass_data = hass.data[DOMAIN][entry.entry_id]
+    binary_path = hass_data["binary_path"]
+
+    # Create coordinator async here (non-blocking)
+    coordinator = SpeedtestSensorData(hass, entry, binary_path)
+
+    # Add sensors
     sensors = [
-        SpeedtestSensor(hass, entry, hass_data, description)
+        SpeedtestSensor(coordinator, description)
         for description in SENSORS
     ]
-    async_add_entities(sensors)
+    async_add_entities(sensors, True)  # Update immediately after add
 
 
 class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
@@ -139,8 +146,6 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
 
     def __init__(
         self,
-        hass: HomeAssistant,
-        entry: ConfigEntry,
         coordinator: SpeedtestSensorData,
         description: SensorEntityDescription,
     ) -> None:
@@ -148,7 +153,6 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}.{description.key}"
-        self._attr_device_info = entry.device_info  # If you add device entry
 
     @property
     def native_value(self) -> StateType | str | None:
@@ -160,15 +164,19 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
                 pass
         return value
 
-    async def async_update(self) -> None:
-        """Update the sensor."""
-        await self.coordinator.async_refresh()
-        self._attr_extra_state_attributes = {
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes."""
+        return {
             key: self.coordinator.data.get(key, "unknown")
             for key in self.coordinator.data
             if key != self.entity_description.key
         }
-        self._attr_available = all(
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return all(
             val != "error" for val in self.coordinator.data.values()
         )
 
@@ -193,7 +201,12 @@ def _parse_output(output: str) -> dict[str, str]:
             data[attr] = match.group(1).strip()
         else:
             # Fallback English patterns
-            eng_pattern = pattern.replace("пинг", "ping").replace("джиттер", "jitter").replace("загрузка", "download").replace("отдача", "upload")
+            eng_pattern = (
+                pattern.replace("пинг", "ping")
+                .replace("джиттер", "jitter")
+                .replace("загрузка", "download")
+                .replace("отдача", "upload")
+            )
             eng_match = re.search(eng_pattern, output, re.IGNORECASE | re.MULTILINE)
             if eng_match:
                 data[attr] = eng_match.group(1).strip()
