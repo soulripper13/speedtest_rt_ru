@@ -1,10 +1,10 @@
 {
     "domain": "speedtest_rt_ru",
     "name": "Speedtest RT.RU",
-    "version": "1.0.0",
-    "documentation": "https://github.com/yourusername/speedtest.rt.ru",
+    "version": "1.0.1",
+    "documentation": "https://github.com/soulripper13/speedtest.rt.ru",
     "requirements": [],
-    "codeowners": ["@yourusername"],
+    "codeowners": ["@soulripper13"],
     "iot_class": "local_polling",
     "config_flow": true
 }
