@@ -148,6 +148,9 @@ async def async_setup_entry(
         _LOGGER.error("Initial update failed: %s", err)
         raise ConfigEntryNotReady("Speedtest initial run failed")
 
+    # Store coordinator for service access
+    hass_data["coordinator"] = coordinator
+
     # Add sensors
     sensors = [
         SpeedtestSensor(coordinator, description)
