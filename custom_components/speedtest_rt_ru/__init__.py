@@ -10,7 +10,6 @@ import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import entity_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
@@ -53,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+    if unload_ok := await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS):
         hass.data[DOMAIN].pop(entry.entry_id)
     return unload_ok
 
@@ -66,26 +65,26 @@ def _register_services(hass: HomeAssistant) -> None:
     """Register the perform_test service."""
 
     async def async_perform_test(service_call) -> None:
-        """Manually trigger speedtest on all sensors."""
-        entity_reg = entity_registry.async_get(hass)
-        updated_entities = []
-        for entity_id, entity_entry in entity_reg.entities.items():
-            if (
-                entity_id.startswith("sensor.speedtest_rt_ru_")
-                and entity_entry.domain == "sensor"
-            ):
-                hass.async_create_task(
-                    hass.services.async_call(
-                        "homeassistant",
-                        "update_entity",
-                        {"entity_id": entity_id},
-                    )
-                )
-                updated_entities.append(entity_id)
-        if updated_entities:
-            _LOGGER.info("Manually triggered update for: %s", ", ".join(updated_entities))
+        """Manually trigger speedtest via coordinator."""
+        hass_data = hass.data.get(DOMAIN)
+        if not hass_data:
+            _LOGGER.warning("No Speedtest RT.RU data found")
+            return
+
+        coordinator = None
+        for entry_id, data in hass_data.items():
+            coordinator = data.get("coordinator")
+            if coordinator:
+                break
+
+        if coordinator:
+            try:
+                await coordinator.async_request_refresh()
+                _LOGGER.info("Manually triggered refresh on Speedtest RT.RU coordinator")
+            except Exception as err:
+                _LOGGER.error("Failed to refresh Speedtest RT.RU: %s", err)
         else:
-            _LOGGER.warning("No Speedtest RT.RU sensors found to update")
+            _LOGGER.warning("No Speedtest RT.RU coordinator found to update")
 
     hass.services.async_register(DOMAIN, "perform_test", async_perform_test)
 
