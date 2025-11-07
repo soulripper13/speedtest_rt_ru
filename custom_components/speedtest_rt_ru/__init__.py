@@ -73,7 +73,6 @@ def _register_services(hass: HomeAssistant) -> None:
             if (
                 entity_id.startswith("sensor.speedtest_rt_ru_")
                 and entity_entry.domain == "sensor"
-                and DOMAIN in entity_entry.unique_id
             ):
                 hass.async_create_task(
                     hass.services.async_call(
