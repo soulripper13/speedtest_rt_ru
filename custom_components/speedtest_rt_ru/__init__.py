@@ -23,7 +23,6 @@ from .const import (
     BINARY_URL,
     BINARY_DIR,
 )
-from .sensor import SpeedtestSensorData
 
 PLATFORMS = [Platform.SENSOR]
 
@@ -37,13 +36,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.error("Failed to download/extract QMS binary")
         return False
 
-    # Store data
+    # Store binary path in hass.data (accessed async by platforms)
     hass.data.setdefault(DOMAIN, {})
-    hass_data = hass.data[DOMAIN][entry.entry_id] = SpeedtestSensorData(
-        hass, entry, binary_path
-    )
+    hass.data[DOMAIN][entry.entry_id] = {"binary_path": binary_path}
 
-    # Forward to platforms
+    # Forward to platforms (async loads sensor.py)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Register service for manual trigger
