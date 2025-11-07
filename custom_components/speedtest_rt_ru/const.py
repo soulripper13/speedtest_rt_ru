@@ -19,6 +19,6 @@ ATTR_ISP = "isp"
 ATTR_SERVER = "server"
 
 # Binary paths and URLs
-BINARY_NAME = "qms"
-BINARY_URL = "https://lib.qms.ru/bin/linux/qms_lib.zip"  # x86_64 only
-BINARY_DIR = ".speedtest_rt_ru"
+BINARY_NAME = "qms_lib"
+BINARY_URL = "https://lib.qms.ru/bin/linux/qms_lib.zip"
+BINARY_DIR = "custom_components/speedtest_rt_ru"
