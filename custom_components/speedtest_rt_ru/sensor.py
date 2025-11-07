@@ -14,11 +14,15 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfDataRate, UnitOfTime
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 
 from .const import (
     DOMAIN,
@@ -39,28 +43,28 @@ SENSORS = (
     SensorEntityDescription(
         key=ATTR_DOWNLOAD,
         name="Download",
-        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
+        native_unit_of_measurement="Mbit/s",
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=ATTR_UPLOAD,
         name="Upload",
-        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
+        native_unit_of_measurement="Mbit/s",
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=ATTR_PING,
         name="Ping",
-        native_unit_of_measurement=UnitOfTime.MILLISECONDS,
+        native_unit_of_measurement="ms",
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=ATTR_JITTER,
         name="Jitter",
-        native_unit_of_measurement=UnitOfTime.MILLISECONDS,
+        native_unit_of_measurement="ms",
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -77,24 +81,36 @@ SENSORS = (
 )
 
 
-class SpeedtestSensorData:
+class SpeedtestSensorData(DataUpdateCoordinator):
     """Data for Speedtest RT.RU sensors."""
 
     def __init__(
         self, hass: HomeAssistant, entry: ConfigEntry, binary_path: str
     ) -> None:
-        """Initialize the sensor data."""
-        self.hass = hass
+        """Initialize the coordinator."""
+        self._binary_path = binary_path
         self.entry = entry
-        self.binary_path = binary_path
-        self.data: dict[str, Any] = {}
-        self._unsub_options = None
 
-    async def async_refresh(self) -> None:
-        """Refresh data from QMS binary."""
+        # Set update interval based on options (no polling if auto_update=False)
+        options = entry.options
+        auto_update = options.get(CONF_AUTO_UPDATE, True)
+        interval = timedelta(
+            seconds=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        ) if auto_update else None
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_interval=interval,
+            update_method=self._async_update_data,
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Fetch data from QMS binary."""
         try:
             proc = await asyncio.create_subprocess_exec(
-                self.binary_path,
+                self._binary_path,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -106,17 +122,16 @@ class SpeedtestSensorData:
                 _LOGGER.debug("QMS Stderr: %s", stderr.decode("utf-8", errors="ignore"))
 
             # Parse with regex (Russian labels first, fallback to English)
-            self.data = _parse_output(output)
+            data = _parse_output(output)
+
+            if all(val == "unknown" for val in data.values()):
+                raise UpdateFailed("No valid data parsed from QMS output")
+
+            return data
+
         except Exception as err:
             _LOGGER.error("Error running QMS binary: %s", err)
-            self.data = {key: "unknown" for key in [desc.key for desc in SENSORS]}
-
-    @property
-    def scan_interval(self) -> timedelta | None:
-        """Return the scan interval."""
-        if not self.entry.options.get(CONF_AUTO_UPDATE, DEFAULT_AUTO_UPDATE):
-            return None
-        return timedelta(seconds=self.entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+            raise UpdateFailed(f"Failed to update: {err}")
 
 
 async def async_setup_entry(
@@ -127,22 +142,24 @@ async def async_setup_entry(
     hass_data = hass.data[DOMAIN][entry.entry_id]
     binary_path = hass_data["binary_path"]
 
-    # Create coordinator async here (non-blocking)
+    # Create coordinator
     coordinator = SpeedtestSensorData(hass, entry, binary_path)
+
+    # Initial refresh
+    await coordinator.async_config_entry_first_refresh()
 
     # Add sensors
     sensors = [
         SpeedtestSensor(coordinator, description)
         for description in SENSORS
     ]
-    async_add_entities(sensors, True)  # Update immediately after add
+    async_add_entities(sensors)
 
 
-class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
+class SpeedtestSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Speedtest RT.RU sensor."""
 
     _attr_has_entity_name = True
-    _attr_unique_id_suffix = None
 
     def __init__(
         self,
@@ -173,17 +190,10 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestSensorData], SensorEntity):
             if key != self.entity_description.key
         }
 
-    @property
-    def available(self) -> bool:
-        """Return if entity is available."""
-        return all(
-            val != "error" for val in self.coordinator.data.values()
-        )
-
 
 def _parse_output(output: str) -> dict[str, str]:
     """Parse QMS binary output."""
-    data = {key: "unknown" for key in [desc.key for desc in SENSORS]}
+    data = {desc.key: "unknown" for desc in SENSORS}
 
     # Regex patterns (Russian first, case-insensitive)
     patterns = {
@@ -206,6 +216,8 @@ def _parse_output(output: str) -> dict[str, str]:
                 .replace("джиттер", "jitter")
                 .replace("загрузка", "download")
                 .replace("отдача", "upload")
+                .replace("провайдер", "isp")
+                .replace("сервер", "server")
             )
             eng_match = re.search(eng_pattern, output, re.IGNORECASE | re.MULTILINE)
             if eng_match:
