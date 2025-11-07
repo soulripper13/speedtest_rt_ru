@@ -14,7 +14,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfInformationRate, UnitOfTime
+from homeassistant.const import UnitOfDataRate, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
@@ -39,14 +39,14 @@ SENSORS = (
     SensorEntityDescription(
         key=ATTR_DOWNLOAD,
         name="Download",
-        native_unit_of_measurement=UnitOfInformationRate.MEGABITS_PER_SECOND,
+        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key=ATTR_UPLOAD,
         name="Upload",
-        native_unit_of_measurement=UnitOfInformationRate.MEGABITS_PER_SECOND,
+        native_unit_of_measurement=UnitOfDataRate.MEGABITS_PER_SECOND,
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
