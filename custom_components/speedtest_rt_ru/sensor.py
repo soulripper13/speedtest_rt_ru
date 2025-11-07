@@ -123,11 +123,7 @@ class SpeedtestSensorData(DataUpdateCoordinator):
 
             # Parse with regex (Russian labels first, fallback to English)
             data = _parse_output(output)
-
-            if all(val == "unknown" for val in data.values()):
-                raise UpdateFailed("No valid data parsed from QMS output")
-
-            return data
+            return data  # Always return, even if all "unknown"
 
         except Exception as err:
             _LOGGER.error("Error running QMS binary: %s", err)
@@ -145,8 +141,12 @@ async def async_setup_entry(
     # Create coordinator
     coordinator = SpeedtestSensorData(hass, entry, binary_path)
 
-    # Initial refresh
-    await coordinator.async_config_entry_first_refresh()
+    # Initial refresh—raise NotReady if fails
+    try:
+        await coordinator.async_config_entry_first_refresh()
+    except UpdateFailed as err:
+        _LOGGER.error("Initial update failed: %s", err)
+        raise ConfigEntryNotReady("Speedtest initial run failed")
 
     # Add sensors
     sensors = [
@@ -175,21 +175,21 @@ class SpeedtestSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> StateType | str | None:
         """Return the state."""
-        value = self.coordinator.data.get(self.entity_description.key)
-        if value == "unknown":
-            # For numeric sensors (has unit), return None to mark unavailable
+        raw_value = self.coordinator.data.get(self.entity_description.key)
+        if raw_value is None or raw_value == "unknown":
+            # For numeric sensors (has unit), return None (unavailable)
             if self.entity_description.native_unit_of_measurement:
                 return None
             # For strings (no unit), return 'unknown'
-            return value
+            return "unknown"
 
         # Parse to number if possible
         try:
-            parsed = float(value)
-            return round(parsed, 2) if "." in str(value) else int(parsed)
+            parsed = float(raw_value)
+            return round(parsed, 2) if "." in str(raw_value) else int(parsed)
         except ValueError:
             # Fallback to string (e.g., ISP name)
-            return value
+            return raw_value
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
