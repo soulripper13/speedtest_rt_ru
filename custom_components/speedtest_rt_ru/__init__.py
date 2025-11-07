@@ -100,7 +100,7 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
         )
 
     binary_dir = Path(hass.config.path(BINARY_DIR))
-    binary_dir.mkdir(exist_ok=True)
+    # No mkdir—component dir exists
     binary_path = binary_dir / BINARY_NAME
 
     if binary_path.exists() and os.access(str(binary_path), os.X_OK):
@@ -124,12 +124,12 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
             zf.extractall(binary_dir)
         _LOGGER.debug("Extracted QMS ZIP contents to %s", binary_dir)
 
-        # Find and chmod the binary (assume named 'qms'; fallback to first executable)
+        # Find and chmod the binary (assume named 'qms_lib'; fallback to first executable)
         extracted_binary = binary_dir / BINARY_NAME
         if not extracted_binary.exists():
             # Fallback: chmod any non-dir file (adjust if multiple)
             for file_path in binary_dir.iterdir():
-                if file_path.is_file():
+                if file_path.is_file() and file_path.name != "qms_lib.zip":  # Skip ZIP
                     extracted_binary = file_path
                     _LOGGER.info("Using extracted binary: %s", extracted_binary.name)
                     break
