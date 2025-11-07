@@ -121,9 +121,9 @@ class SpeedtestSensorData(DataUpdateCoordinator):
             if stderr:
                 _LOGGER.debug("QMS Stderr: %s", stderr.decode("utf-8", errors="ignore"))
 
-            # Parse with regex (Russian labels first, fallback to English)
+            # Parse with regex (English labels from QMS binary)
             data = _parse_output(output)
-            return data  # Always return, even if all "unknown"
+            return data  # Always return, even if partial "unknown"
 
         except Exception as err:
             _LOGGER.error("Error running QMS binary: %s", err)
@@ -205,32 +205,19 @@ def _parse_output(output: str) -> dict[str, str]:
     """Parse QMS binary output."""
     data = {desc.key: "unknown" for desc in SENSORS}
 
-    # Regex patterns (Russian first, case-insensitive)
+    # Regex patterns for English QMS output (case-insensitive, multi-line)
     patterns = {
-        ATTR_PING: r"пинг\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*мс",
-        ATTR_JITTER: r"джиттер\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*мс",
-        ATTR_DOWNLOAD: r"загрузка\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*(мбит|mbps)",
-        ATTR_UPLOAD: r"отдача\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*(мбит|mbps)",
-        ATTR_ISP: r"(провайдер|isp)\s*[:\-]?\s*([^\n,]+)",
-        ATTR_SERVER: r"(сервер|server)\s*[:\-]?\s*([^\n,]+)",
+        ATTR_PING: r"Idle Latency:\s*(\d+(?:\.\d+)?)\s*ms",
+        ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)\s*ms",
+        ATTR_DOWNLOAD: r"Download:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
+        ATTR_UPLOAD: r"Upload:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
+        ATTR_ISP: r"ISP:\s*([^\n]+)",
+        ATTR_SERVER: r"Server:\s*([^\n]+)",
     }
 
     for attr, pattern in patterns.items():
         match = re.search(pattern, output, re.IGNORECASE | re.MULTILINE)
         if match:
             data[attr] = match.group(1).strip()
-        else:
-            # Fallback English patterns
-            eng_pattern = (
-                pattern.replace("пинг", "ping")
-                .replace("джиттер", "jitter")
-                .replace("загрузка", "download")
-                .replace("отдача", "upload")
-                .replace("провайдер", "isp")
-                .replace("сервер", "server")
-            )
-            eng_match = re.search(eng_pattern, output, re.IGNORECASE | re.MULTILINE)
-            if eng_match:
-                data[attr] = eng_match.group(1).strip()
 
     return data
