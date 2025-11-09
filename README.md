@@ -1,28 +1,37 @@
 # Speedtest RT.RU Integration for Home Assistant
+
+Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
+
 ![Logo](icon.png)
+
 ## English
-**Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed. It provides six sensors:
+
+**Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed ( Work best in Russia as Ookla i blocked). It provides six sensors:
 - **Download** – download speed in Mbps
 - **Upload** – upload speed in Mbps
 - **Ping** – network latency in milliseconds
 - **Jitter** – network jitter in milliseconds
 - **ISP** – your Internet Service Provider name
 - **Server** – the speedtest server used
+
 ### Features
 - Automatic download of the QMS speedtest binary on setup
 - Configurable update interval through the Home Assistant UI or manual update
 - Fully compatible with Home Assistant and HACS
 - Works only on x86_64 systems
+
 ### Installation
 #### Manual installation
 1. Copy the `custom_components/speedtest_rt_ru` folder to your Home Assistant `config/custom_components` directory
 2. Restart Home Assistant
 3. Go to **Settings → Devices & Services → Add Integration → Speedtest RT.RU**
 4. Configure update interval or leave default
+
 #### HACS installation
 1. Add this repository to HACS as a **custom integration**
 2. Install via HACS
 3. Add the integration via the UI as above
+
 ### Usage
 After setup, you will see six sensors:
 - `sensor.download`
@@ -31,6 +40,7 @@ After setup, you will see six sensors:
 - `sensor.jitter`
 - `sensor.isp`
 - `sensor.server`
+
 These can be used in automations, Lovelace dashboards, or for monitoring your internet connection.
 
 The integration also exposes a service `speedtest_rt_ru.perform_test` that can be called to manually trigger a speed test and update the sensors. To use it:
@@ -47,8 +57,11 @@ If you want to disable automatic polling (updates at the configured interval) an
 ### Troubleshooting
 - If you see `Exec format error`, ensure that the QMS binary matches your system architecture
 - Logs are available in **Settings → System → Logs**
+
 ---
+
 ## Русский
+
 **Speedtest RT.RU** — интеграция для Home Assistant, которая автоматически скачивает и запускает бинарник QMS с [RT.RU](https://speedtest.rt.ru) для измерения скорости интернета. Интеграция предоставляет шесть сенсоров:
 - **Скорость загрузки** – в Мбит/с
 - **Скорость отдачи** – в Мбит/с
@@ -56,21 +69,25 @@ If you want to disable automatic polling (updates at the configured interval) an
 - **Jitter** – джиттер сети в миллисекундах
 - **ISP** – название вашего интернет-провайдера
 - **Server** – используемый сервер Speedtest
+
 ### Возможности
 - Автоматическая загрузка бинарника QMS при установке
 - Настраиваемый интервал обновления через UI Home Assistant или ручное обновление
 - Полная совместимость с Home Assistant и HACS
 - Работает только на системах x86_64
+
 ### Установка
 #### Ручная установка
 1. Скопируйте папку `custom_components/speedtest_rt_ru` в директорию `config/custom_components` Home Assistant
 2. Перезапустите Home Assistant
 3. Перейдите в **Настройки → Устройства и Сервисы → Добавить интеграцию → Speedtest RT.RU**
 4. Настройте интервал обновления или оставьте значение по умолчанию
+
 #### Установка через HACS
 1. Добавьте репозиторий в HACS как **пользовательскую интеграцию**
 2. Установите через HACS
 3. Добавьте интеграцию через UI, как указано выше
+
 ### Использование
 После установки будут доступны шесть сенсоров:
 - `sensor.download`
@@ -79,6 +96,7 @@ If you want to disable automatic polling (updates at the configured interval) an
 - `sensor.jitter`
 - `sensor.isp`
 - `sensor.server`
+
 Их можно использовать в автоматизациях, Lovelace дашбордах или для мониторинга интернет-соединения.
 
 Интеграция также предоставляет сервис `speedtest_rt_ru.perform_test`, который можно вызвать для ручного запуска теста скорости и обновления сенсоров. Чтобы использовать его:
