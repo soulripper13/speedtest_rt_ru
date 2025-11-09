@@ -3,7 +3,8 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom%20integration-yellow.svg)](https://github.com/hacs/integration)
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License][license-shield]](LICENSE)
+
 
 Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
 
