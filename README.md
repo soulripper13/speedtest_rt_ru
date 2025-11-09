@@ -18,7 +18,7 @@
 - Automatic download of the QMS speedtest binary on setup  
 - Configurable update interval through the Home Assistant UI or manual update  
 - Fully compatible with Home Assistant and HACS  
-- Works on x86 and ARM devices (depending on QMS binary compatibility)
+- Works on x86_64
 
 ### Installation
 
@@ -71,7 +71,7 @@ These can be used in automations, Lovelace dashboards, or for monitoring your in
 - Автоматическая загрузка бинарника QMS при установке  
 - Настраиваемый интервал обновления через UI Home Assistant или ручное обновление  
 - Полная совместимость с Home Assistant и HACS  
-- Работает на устройствах x86 и ARM (в зависимости от совместимости бинарника QMS)
+- Работает на устройствах x86_64
 
 ### Установка
 
