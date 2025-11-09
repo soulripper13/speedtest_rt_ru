@@ -1,14 +1,15 @@
 # Speedtest RT.RU Integration for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom%20integration-yellow.svg)](https://github.com/hacs/integration)
+[![hacs_badge][hacsbadge]][hacs] 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
+[![Community Forum][forum-shield]][forum]
+
 
 
 Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
 
-[![Community Forum][forum-shield]][forum]
 
 ![Logo](icon.png)
 
