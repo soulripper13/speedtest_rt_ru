@@ -38,8 +38,13 @@ It provides six sensors:
 4. Add the integration via the UI:
    **Settings → Devices & Services → Add Integration → Speedtest RT.RU**.
 Or simply click:
+
 [![Open HACS Repository][hacs-repo-badge]][hacs-repo]
+
+
 [![Add Integration][config-flow-badge]][config-flow]
+
+
 ---
 ### Usage
 After setup, you will see six sensors (entity IDs may include the domain prefix, e.g. `sensor.speedtest_rt_ru_download`):
