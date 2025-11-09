@@ -8,6 +8,8 @@
 
 Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
 
+[![Community Forum][forum-shield]][forum]
+
 ![Logo](icon.png)
 
 ---
