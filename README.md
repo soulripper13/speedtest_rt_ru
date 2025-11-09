@@ -102,7 +102,9 @@ Now sensors update only when the service is manually triggered.
 2. Установите через HACS.
 3. Добавьте интеграцию через UI.
 Или просто кликните:
+
 [![Открыть в HACS][hacs-repo-badge]][hacs-repo]
+
 [![Добавить Интеграцию][config-flow-badge]][config-flow]
 ---
 ### Использование
