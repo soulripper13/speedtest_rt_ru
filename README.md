@@ -39,12 +39,12 @@
 
 After setup, you will see six sensors:
 
-- `sensor.speedtest_rt_ru_download`  
-- `sensor.speedtest_rt_ru_upload`  
-- `sensor.speedtest_rt_ru_ping`  
-- `sensor.speedtest_rt_ru_jitter`  
-- `sensor.speedtest_rt_ru_isp`  
-- `sensor.speedtest_rt_ru_server`  
+- `sensor.download`  
+- `sensor.upload`  
+- `sensor.ping`  
+- `sensor.jitter`  
+- `sensor.isp`  
+- `sensor.server`  
 
 These can be used in automations, Lovelace dashboards, or for monitoring your internet connection.
 
@@ -92,12 +92,12 @@ These can be used in automations, Lovelace dashboards, or for monitoring your in
 
 После установки будут доступны шесть сенсоров:
 
-- `sensor.speedtest_rt_ru_download`  
-- `sensor.speedtest_rt_ru_upload`  
-- `sensor.speedtest_rt_ru_ping`  
-- `sensor.speedtest_rt_ru_jitter`  
-- `sensor.speedtest_rt_ru_isp`  
-- `sensor.speedtest_rt_ru_server`  
+- `sensor.download`  
+- `sensor.upload`  
+- `sensor.ping`  
+- `sensor.jitter`  
+- `sensor.isp`  
+- `sensor.server`   
 
 Их можно использовать в автоматизациях, Lovelace дашбордах или для мониторинга интернет-соединения.
 
