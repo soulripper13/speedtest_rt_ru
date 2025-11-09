@@ -21,7 +21,7 @@ Home Assistant integration for measuring internet speed using RT.RU's QMS binary
 - Configurable update interval through the Home Assistant UI or manual update
 - Fully compatible with Home Assistant and HACS
 - Works only on x86_64 systems
-- Requires Home Assistant 2023.9+ (adjust if different)
+- Requires Home Assistant 2025.11+
 
 ### Installation
 #### Manual installation
@@ -78,7 +78,7 @@ If you want to disable automatic polling (updates at the configured interval) an
 - Настраиваемый интервал обновления через UI Home Assistant или ручное обновление
 - Полная совместимость с Home Assistant и HACS
 - Работает только на системах x86_64
-- Требует Home Assistant 2023.9+ (если отличается, скорректируйте)
+- Требует Home Assistant 2025.11+
 
 ### Установка
 #### Ручная установка
