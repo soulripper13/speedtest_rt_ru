@@ -1,6 +1,10 @@
 # Speedtest RT.RU Integration for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom%20integration-yellow.svg)](https://github.com/hacs/integration)
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]](LICENSE)
+
 
 Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
 
@@ -31,9 +35,17 @@ Home Assistant integration for measuring internet speed using RT.RU's QMS binary
 4. Configure update interval or leave default
 
 #### HACS installation
-1. Add this repository to HACS as a **custom integration**
-2. Install via HACS
-3. Add the integration via the UI as above
+The preferred way is to use HACS:
+
+1. Search and download this integration to your HA installation via HACS, or click:
+
+   [![Open HACS Repository][hacs-repo-badge]][hacs-repo]
+
+1. Restart home assistant
+
+1. Add this integration to Home Assistant, or click:
+
+   [![Add Integration][config-flow-badge]][config-flow]
 
 ### Usage
 After setup, you will see six sensors (entity IDs may include domain prefix, e.g., `sensor.speedtest_rt_ru_download`):
