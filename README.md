@@ -1,3 +1,5 @@
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom%20integration-yellow.svg)](https://github.com/hacs/integration)
+
 # Speedtest RT.RU Integration for Home Assistant
 
 Home Assistant integration for measuring internet speed using RT.RU's QMS binary.
@@ -6,7 +8,7 @@ Home Assistant integration for measuring internet speed using RT.RU's QMS binary
 
 ## English
 
-**Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed ( Work best in Russia as Ookla is blocked). It provides six sensors:
+**Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed. It provides six sensors:
 - **Download** – download speed in Mbps
 - **Upload** – upload speed in Mbps
 - **Ping** – network latency in milliseconds
@@ -19,6 +21,7 @@ Home Assistant integration for measuring internet speed using RT.RU's QMS binary
 - Configurable update interval through the Home Assistant UI or manual update
 - Fully compatible with Home Assistant and HACS
 - Works only on x86_64 systems
+- Requires Home Assistant 2023.9+ (adjust if different)
 
 ### Installation
 #### Manual installation
@@ -33,7 +36,7 @@ Home Assistant integration for measuring internet speed using RT.RU's QMS binary
 3. Add the integration via the UI as above
 
 ### Usage
-After setup, you will see six sensors:
+After setup, you will see six sensors (entity IDs may include domain prefix, e.g., `sensor.speedtest_rt_ru_download`):
 - `sensor.download`
 - `sensor.upload`
 - `sensor.ping`
@@ -55,7 +58,7 @@ If you want to disable automatic polling (updates at the configured interval) an
 - Save changes. Sensors will now only update when you call the service.
 
 ### Troubleshooting
-- If you see `Exec format error`, ensure that the QMS binary matches your system architecture
+- If you see **`Exec format error`**, ensure that the QMS binary matches your system architecture (x86_64 only)
 - Logs are available in **Settings → System → Logs**
 
 ---
@@ -75,6 +78,7 @@ If you want to disable automatic polling (updates at the configured interval) an
 - Настраиваемый интервал обновления через UI Home Assistant или ручное обновление
 - Полная совместимость с Home Assistant и HACS
 - Работает только на системах x86_64
+- Требует Home Assistant 2023.9+ (если отличается, скорректируйте)
 
 ### Установка
 #### Ручная установка
@@ -89,7 +93,7 @@ If you want to disable automatic polling (updates at the configured interval) an
 3. Добавьте интеграцию через UI, как указано выше
 
 ### Использование
-После установки будут доступны шесть сенсоров:
+После установки будут доступны шесть сенсоров (ID сущностей могут включать префикс домена, напр., `sensor.speedtest_rt_ru_download`):
 - `sensor.download`
 - `sensor.upload`
 - `sensor.ping`
@@ -111,5 +115,5 @@ If you want to disable automatic polling (updates at the configured interval) an
 - Сохраните изменения. Сенсоры теперь будут обновляться только при вызове сервиса.
 
 ### Устранение неполадок
-- Если появляется ошибка `Exec format error`, убедитесь, что бинарник QMS соответствует архитектуре вашей системы
+- Если появляется ошибка **`Exec format error`**, убедитесь, что бинарник QMS соответствует архитектуре вашей системы (только x86_64)
 - Логи доступны в **Настройки → Система → Журналы**
