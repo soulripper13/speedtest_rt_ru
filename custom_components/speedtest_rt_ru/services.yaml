@@ -1,0 +1,4 @@
+perform_test:
+  name: Perform Speed Test
+  description: Manually triggers a speed test using the RT.RU QMS binary and updates the sensors.
+  # No fields/parameters needed if none are required
