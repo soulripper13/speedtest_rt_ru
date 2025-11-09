@@ -1,12 +1,12 @@
 {
   "domain": "speedtest_rt_ru",
   "name": "Speedtest RT.RU",
-  "documentation": "https://github.com/soulripper13/speedtest_rt_ru",
-  "issue_tracker": "https://github.com/soulripper13/speedtest_rt_ru/issues",
   "codeowners": ["@soulripper13"],
-  "iot_class": "local_polling",
-  "version": "1.1.0",
-  "requirements": [],
   "config_flow": true,
-  "dependencies": []
+  "dependencies": [],
+  "documentation": "https://github.com/soulripper13/speedtest_rt_ru",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/soulripper13/speedtest_rt_ru/issues",
+  "requirements": [],
+  "version": "1.1.0"
 }
