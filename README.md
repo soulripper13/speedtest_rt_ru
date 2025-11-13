@@ -7,9 +7,7 @@
 ---
 ## English
 **Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed.
-
-![Logo](logo.png)
-
+![Logo](icon.png)
 It provides six sensors:
 - **Download** – download speed in Mbps
 - **Upload** – upload speed in Mbps
