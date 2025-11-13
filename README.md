@@ -4,7 +4,6 @@
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 [![Community Forum][forum-shield]][forum]
-
 ---
 ## English
 **Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed.
@@ -32,18 +31,12 @@ It provides six sensors:
 3. Go to **Settings → Devices & Services → Add Integration → Speedtest RT.RU**.
 4. Configure update interval or leave the default.
 #### HACS installation (preferred)
-1. Add this repository to HACS as a **Custom Repository** (type: integration).
-2. Download and install **Speedtest RT.RU** via HACS.
-3. Restart Home Assistant.
-4. Add the integration via the UI:
-   **Settings → Devices & Services → Add Integration → Speedtest RT.RU**.
-Or simply click:
-
-[![Open HACS Repository][hacs-repo-badge]][hacs-repo]
-
-
-[![Add Integration][config-flow-badge]][config-flow]
-
+The preferred way is to use HACS:
+1. Search and download this integration to your HA installation via HACS, or click:  
+   [![Open HACS Repository][hacs-repo-badge]][hacs-repo]
+2. Restart Home Assistant
+3. Add this integration to Home Assistant, or click:  
+   [![Add Integration][config-flow-badge]][config-flow]
 
 ---
 ### Usage
@@ -77,6 +70,7 @@ Now sensors update only when the service is manually triggered.
 ---
 ## Русский
 **Speedtest RT.RU** — интеграция для Home Assistant, автоматически загружающая и запускающая бинарник QMS с [RT.RU](https://speedtest.rt.ru) для измерения скорости интернета.
+![Logo](icon.png)
 Интеграция предоставляет шесть сенсоров:
 - **Скорость загрузки** – в Мбит/с
 - **Скорость отдачи** – в Мбит/с
@@ -97,15 +91,14 @@ Now sensors update only when the service is manually triggered.
 2. Перезапустите Home Assistant.
 3. Перейдите в **Настройки → Устройства и Сервисы → Добавить интеграцию → Speedtest RT.RU**.
 4. Настройте интервал обновления.
-#### Установка через HACS
-1. Добавьте репозиторий в HACS как **пользовательскую интеграцию**.
-2. Установите через HACS.
-3. Добавьте интеграцию через UI.
-Или просто кликните:
+#### Установка через HACS (предпочтительно)
+Предпочтительный способ — использовать HACS:
+1. Найдите и загрузите эту интеграцию в вашу установку HA через HACS, или нажмите:  
+   [![Открыть репозиторий HACS][hacs-repo-badge]][hacs-repo]
+2. Перезапустите Home Assistant
+3. Добавьте эту интеграцию в Home Assistant, или нажмите:  
+   [![Добавить интеграцию][config-flow-badge]][config-flow]
 
-[![Открыть в HACS][hacs-repo-badge]][hacs-repo]
-
-[![Добавить Интеграцию][config-flow-badge]][config-flow]
 ---
 ### Использование
 После установки будут доступны шесть сенсоров (ID сущностей могут включать префикс домена, напр. `sensor.speedtest_rt_ru_download`):
@@ -131,12 +124,11 @@ Now sensors update only when the service is manually triggered.
 - [HACS Integration Guide](https://hacs.xyz/docs/faq/custom_repositories/)
 - Developed by [soulripper13](https://github.com/soulripper13)
 ---
-
 [hacs]: https://github.com/hacs/integration
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-41BDF5?style=for-the-badge
-[hacs-repo-badge]: https://img.shields.io/badge/Open%20in-HACS-41BDF5?style=for-the-badge&logo=home-assistant
-[hacs-repo]: https://github.com/soulripper13/speedtest_rt_ru
-[config-flow-badge]: https://img.shields.io/badge/Add%20Integration-Speedtest%20RT.RU-blue?style=for-the-badge&logo=home-assistant
+[hacs-repo-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
+[hacs-repo]: https://my.home-assistant.io/redirect/hacs_repository/?owner=soulripper13&repository=speedtest_rt_ru&category=integration
+[config-flow-badge]: https://my.home-assistant.io/badges/config_flow_start.svg
 [config-flow]: https://my.home-assistant.io/redirect/config_flow_start?domain=speedtest_rt_ru
 [commits-shield]: https://img.shields.io/github/commit-activity/m/soulripper13/speedtest_rt_ru?style=for-the-badge
 [commits]: https://github.com/soulripper13/speedtest_rt_ru/commits/main
