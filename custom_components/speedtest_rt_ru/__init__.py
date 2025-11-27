@@ -52,7 +52,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS):
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
     return unload_ok
 
@@ -87,6 +88,46 @@ def _register_services(hass: HomeAssistant) -> None:
             _LOGGER.warning("No Speedtest RT.RU coordinator found to update")
 
     hass.services.async_register(DOMAIN, "perform_test", async_perform_test)
+
+async def get_available_servers(binary_path: str) -> dict[str, str]:
+    """Fetch available servers from QMS binary."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            binary_path,
+            "-L",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        output = stdout.decode("utf-8", errors="ignore").strip()
+
+        servers = {"auto": "Auto (Best Server)"}
+
+        # Parse server list - skip header lines
+        in_server_list = False
+        for line in output.splitlines():
+            if "===============" in line:
+                in_server_list = True
+                continue
+
+            if in_server_list and line.strip():
+                # Parse line format: ID  Name  City  Region
+                parts = line.split(maxsplit=3)
+                if len(parts) >= 3 and parts[0].isdigit():
+                    server_id = parts[0]
+                    server_name = parts[1] if len(parts) > 1 else ""
+                    server_city = parts[2] if len(parts) > 2 else ""
+
+                    # Create display name: "City - Name"
+                    display_name = f"{server_city} - {server_name}" if server_city else server_name
+                    servers[server_id] = display_name
+
+        _LOGGER.debug("Found %d servers", len(servers) - 1)
+        return servers
+
+    except Exception as err:
+        _LOGGER.error("Error fetching server list: %s", err)
+        return {"auto": "Auto (Best Server)"}
 
 async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | None:
     """Download and extract the QMS binary ZIP if not present."""
