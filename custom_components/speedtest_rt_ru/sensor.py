@@ -28,7 +28,9 @@ from .const import (
     DOMAIN,
     CONF_AUTO_UPDATE,
     CONF_SCAN_INTERVAL,
+    CONF_SERVER_ID,
     DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SERVER_ID,
     ATTR_DOWNLOAD,
     ATTR_UPLOAD,
     ATTR_PING,
@@ -91,8 +93,14 @@ class SpeedtestSensorData(DataUpdateCoordinator):
         self._binary_path = binary_path
         self.entry = entry
 
-        # Set update interval based on options (no polling if auto_update=False)
+        # Get server_id from options or data
         options = entry.options
+        self._server_id = options.get(
+            CONF_SERVER_ID,
+            entry.data.get(CONF_SERVER_ID, DEFAULT_SERVER_ID)
+        )
+
+        # Set update interval based on options (no polling if auto_update=False)
         auto_update = options.get(CONF_AUTO_UPDATE, True)
         interval = timedelta(
             seconds=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
@@ -109,8 +117,15 @@ class SpeedtestSensorData(DataUpdateCoordinator):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from QMS binary."""
         try:
+            # Build command arguments
+            cmd_args = [self._binary_path]
+
+            # Add server selection if not "auto"
+            if self._server_id and self._server_id != "auto":
+                cmd_args.extend(["-S", self._server_id])
+
             proc = await asyncio.create_subprocess_exec(
-                self._binary_path,
+                *cmd_args,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
