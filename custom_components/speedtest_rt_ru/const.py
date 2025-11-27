@@ -5,10 +5,12 @@ DOMAIN = "speedtest_rt_ru"
 # Configuration keys
 CONF_SCAN_INTERVAL = "scan_interval"
 CONF_AUTO_UPDATE = "auto_update"
+CONF_SERVER_ID = "server_id"
 
 # Defaults
 DEFAULT_SCAN_INTERVAL = 1800  # 30 minutes in seconds
 DEFAULT_AUTO_UPDATE = True
+DEFAULT_SERVER_ID = "auto"  # Auto-select server
 
 # Sensor attributes
 ATTR_DOWNLOAD = "download"
