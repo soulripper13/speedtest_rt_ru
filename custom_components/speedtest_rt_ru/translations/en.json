@@ -2,7 +2,34 @@
   "config": {
     "step": {
       "user": {
-        "title": "Speedtest RT.RU Setup"
+        "title": "Speedtest RT.RU Setup",
+        "data": {
+          "server_id": "Test Server",
+          "scan_interval": "Update Interval (seconds)",
+          "auto_update": "Enable Automatic Updates"
+        },
+        "data_description": {
+          "server_id": "Select which server to use for speedtest measurements",
+          "scan_interval": "How often to run speedtests automatically (in seconds)",
+          "auto_update": "Enable automatic speedtest updates at the specified interval"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Speedtest RT.RU Options",
+        "data": {
+          "server_id": "Test Server",
+          "scan_interval": "Update Interval (seconds)",
+          "auto_update": "Enable Automatic Updates"
+        },
+        "data_description": {
+          "server_id": "Select which server to use for speedtest measurements",
+          "scan_interval": "How often to run speedtests automatically (in seconds)",
+          "auto_update": "Enable automatic speedtest updates at the specified interval"
+        }
       }
     }
   }
