@@ -19,6 +19,7 @@ It provides six sensors:
 - **Server** – the speedtest server used
 ### Features
 - Automatic download of the QMS speedtest binary on setup
+- **Server selection** – choose from available Russian speedtest servers or use automatic selection
 - Configurable update interval through the Home Assistant UI or manual update
 - Fully compatible with Home Assistant and HACS
 - Works only on **x86_64** systems
@@ -48,6 +49,18 @@ After setup, you will see six sensors (entity IDs may include the domain prefix,
 - `sensor.isp`
 - `sensor.server`
 You can use them in automations, Lovelace dashboards, or for monitoring your internet connection.
+
+#### Server Selection
+You can choose which speedtest server to use:
+1. Go to **Settings → Devices & Services**.
+2. Find your Speedtest RT.RU integration.
+3. Click ⚙️ **Configure**.
+4. Select your preferred server from the **Test Server** dropdown:
+   - **Auto (Best Server)** – automatically selects the best server
+   - Or choose a specific server by city (e.g., "Хабаровск - khabarovsk1.qms.ru")
+5. Save changes. The integration will reload automatically.
+
+#### Manual Speed Test
 The integration also exposes a service:
 `speedtest_rt_ru.perform_test`
 You can call it manually to trigger a speed test and update all sensors.
@@ -55,11 +68,13 @@ To call the service:
 1. Go to **Developer Tools → Services**.
 2. Select `speedtest_rt_ru.perform_test` from the dropdown.
 3. Call the service (no parameters required).
+
+#### Disable Automatic Updates
 If you prefer to disable automatic polling:
 - Go to **Settings → Devices & Services**.
 - Find your Speedtest RT.RU integration.
 - Click ⚙️ **Configure**.
-- Disable “Enable polling” or set a high scan interval (e.g., never).
+- Disable "Enable Automatic Updates" or set a high scan interval.
 - Save changes.
 Now sensors update only when the service is manually triggered.
 ---
@@ -82,6 +97,7 @@ Now sensors update only when the service is manually triggered.
 - **Server** – используемый сервер Speedtest
 ### Возможности
 - Автоматическая загрузка бинарника QMS при установке
+- **Выбор сервера** – возможность выбора сервера из доступных серверов Speedtest или автоматический выбор
 - Настраиваемый интервал обновления через UI Home Assistant
 - Полная совместимость с Home Assistant и HACS
 - Работает только на **x86_64** системах
@@ -111,9 +127,32 @@ Now sensors update only when the service is manually triggered.
 - `sensor.isp`
 - `sensor.server`
 Можно использовать в автоматизациях, Lovelace-дэшбордах и для мониторинга соединения.
+
+#### Выбор сервера
+Вы можете выбрать, какой сервер использовать для тестирования скорости:
+1. Перейдите в **Настройки → Устройства и Сервисы**.
+2. Найдите интеграцию Speedtest RT.RU.
+3. Нажмите ⚙️ **Настроить**.
+4. Выберите предпочитаемый сервер из выпадающего списка **Тестовый сервер**:
+   - **Auto (Best Server)** – автоматический выбор лучшего сервера
+   - Или выберите конкретный сервер по городу (например, "Хабаровск - khabarovsk1.qms.ru")
+5. Сохраните изменения. Интеграция перезагрузится автоматически.
+
+#### Ручной запуск теста
 Для ручного запуска теста скорости используйте сервис
 `speedtest_rt_ru.perform_test`
-(через **Инструменты разработчика → Сервисы**).
+1. Перейдите в **Инструменты разработчика → Сервисы**.
+2. Выберите `speedtest_rt_ru.perform_test` из выпадающего списка.
+3. Вызовите сервис (параметры не требуются).
+
+#### Отключение автоматических обновлений
+Если вы хотите отключить автоматический опрос:
+1. Перейдите в **Настройки → Устройства и Сервисы**.
+2. Найдите интеграцию Speedtest RT.RU.
+3. Нажмите ⚙️ **Настроить**.
+4. Отключите "Включить автоматические обновления" или установите большой интервал сканирования.
+5. Сохраните изменения.
+Теперь сенсоры будут обновляться только при ручном вызове сервиса.
 ---
 ### Устранение неполадок
 - Ошибка **`Exec format error`** → убедитесь, что используется архитектура **x86_64**.
