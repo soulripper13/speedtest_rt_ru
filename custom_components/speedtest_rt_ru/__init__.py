@@ -155,12 +155,17 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
                 _LOGGER.error("Failed to download ZIP from %s: %s", BINARY_URL, resp.status)
                 return None
             content = await resp.read()
-        zip_path.write_bytes(content)
+
+        # Write file in executor to avoid blocking
+        await hass.async_add_executor_job(zip_path.write_bytes, content)
         _LOGGER.debug("Downloaded QMS ZIP to %s", zip_path)
 
-        # Extract ZIP
-        with zipfile.ZipFile(zip_path, 'r') as zf:
-            zf.extractall(binary_dir)
+        # Extract ZIP in executor to avoid blocking
+        def extract_zip():
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                zf.extractall(binary_dir)
+
+        await hass.async_add_executor_job(extract_zip)
         _LOGGER.debug("Extracted QMS ZIP contents to %s", binary_dir)
 
         # Find and chmod the binary (assume named 'qms_lib'; fallback to first executable)
@@ -176,13 +181,15 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
                 _LOGGER.error("No executable found in ZIP")
                 return None
 
-        os.chmod(str(extracted_binary), 0o755)
-        zip_path.unlink()  # Clean up ZIP
+        # Chmod in executor to avoid blocking
+        await hass.async_add_executor_job(os.chmod, str(extracted_binary), 0o755)
+        # Cleanup ZIP in executor
+        await hass.async_add_executor_job(zip_path.unlink)
         _LOGGER.info("Extracted and made executable QMS binary at %s", extracted_binary)
         return str(extracted_binary)
 
     except Exception as err:
         _LOGGER.error("Error downloading/extracting binary: %s", err)
         if zip_path.exists():
-            zip_path.unlink()
+            await hass.async_add_executor_job(zip_path.unlink)
         return None
