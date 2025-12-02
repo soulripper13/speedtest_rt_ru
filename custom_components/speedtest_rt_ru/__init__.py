@@ -23,7 +23,7 @@ from .const import (
     BINARY_DIR,
 )
 
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.BUTTON]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -87,7 +87,8 @@ def _register_services(hass: HomeAssistant) -> None:
         else:
             _LOGGER.warning("No Speedtest RT.RU coordinator found to update")
 
-    hass.services.async_register(DOMAIN, "perform_test", async_perform_test)
+    if not hass.services.has_service(DOMAIN, "perform_test"):
+        hass.services.async_register(DOMAIN, "perform_test", async_perform_test)
 
 async def get_available_servers(binary_path: str) -> dict[str, str]:
     """Fetch available servers from QMS binary."""

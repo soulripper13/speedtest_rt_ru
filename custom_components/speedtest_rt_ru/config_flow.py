@@ -1,5 +1,10 @@
 """Config flow for Speedtest RT.RU integration."""
+from __future__ import annotations
+
 import logging
+from pathlib import Path
+from typing import Any
+
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -20,6 +25,8 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_AUTO_UPDATE,
     DEFAULT_SERVER_ID,
+    BINARY_DIR,
+    BINARY_NAME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,7 +45,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return OptionsFlowHandler()
 
     async def async_step_user(
-        self, user_input: dict[str, any] | None = None
+        self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
         if self._async_current_entries():
@@ -66,7 +73,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle Speedtest RT.RU options."""
 
     async def async_step_init(
-        self, user_input: dict[str, any] | None = None
+        self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
@@ -88,9 +95,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         # Get available servers
         from . import get_available_servers
-        from pathlib import Path
 
-        binary_path = Path(self.hass.config.path("custom_components/speedtest_rt_ru/qms_lib"))
+        binary_path = Path(self.hass.config.path(BINARY_DIR)) / BINARY_NAME
         servers = {"auto": "Auto (Best Server)"}
 
         if binary_path.exists():

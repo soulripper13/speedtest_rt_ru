@@ -13,6 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -129,7 +130,16 @@ class SpeedtestSensorData(DataUpdateCoordinator):
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
-            stdout, stderr = await proc.communicate()
+
+            try:
+                stdout, stderr = await asyncio.wait_for(
+                    proc.communicate(), timeout=120
+                )
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+                raise UpdateFailed("Speedtest timed out after 120 seconds")
+
             output = stdout.decode("utf-8", errors="ignore").strip()
 
             _LOGGER.debug("QMS Raw Output: %s", output)
@@ -188,7 +198,17 @@ class SpeedtestSensor(CoordinatorEntity, SensorEntity):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"{DOMAIN}.{description.key}"
+        self._attr_unique_id = f"{coordinator.entry.entry_id}_{description.key}"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.coordinator.entry.entry_id)},
+            name="Speedtest RT.RU",
+            manufacturer="Rostelecom",
+            model="QMS Speedtest",
+        )
 
     @property
     def native_value(self) -> StateType | str | None:
