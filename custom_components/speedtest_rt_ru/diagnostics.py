@@ -7,6 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
+from .coordinator import SpeedtestCoordinator
 
 
 async def async_get_config_entry_diagnostics(
@@ -14,7 +15,7 @@ async def async_get_config_entry_diagnostics(
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry."""
     hass_data = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
-    coordinator = hass_data.get("coordinator")
+    coordinator: SpeedtestCoordinator | None = hass_data.get("coordinator")
 
     diagnostics_data: dict[str, Any] = {
         "entry": {

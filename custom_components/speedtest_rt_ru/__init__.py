@@ -10,6 +10,7 @@ import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
@@ -22,6 +23,7 @@ from .const import (
     BINARY_URL,
     BINARY_DIR,
 )
+from .coordinator import SpeedtestCoordinator
 
 PLATFORMS = [Platform.SENSOR, Platform.BUTTON]
 
@@ -35,18 +37,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.error("Failed to download/extract QMS binary")
         return False
 
-    # Store binary path in hass.data (accessed async by platforms)
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = {"binary_path": binary_path}
+    # Create coordinator
+    coordinator = SpeedtestCoordinator(hass, entry, binary_path)
 
-    # Forward to platforms (async loads sensor.py)
+    # Initial refresh—raise NotReady if fails
+    try:
+        await coordinator.async_config_entry_first_refresh()
+    except Exception as err:
+        _LOGGER.error("Initial update failed: %s", err)
+        raise ConfigEntryNotReady("Speedtest initial run failed") from err
+
+    # Store in hass.data (coordinator available for all platforms)
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN][entry.entry_id] = {
+        "binary_path": binary_path,
+        "coordinator": coordinator,
+    }
+
+    # Forward to platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Register service for manual trigger
     _register_services(hass)
 
     # Listen for options changes
-    entry.add_update_listener(async_options_updated)
+    entry.async_on_unload(entry.add_update_listener(async_options_updated))
 
     return True
 
