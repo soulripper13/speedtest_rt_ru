@@ -1,57 +1,132 @@
+"""DataUpdateCoordinator for Speedtest RT.RU."""
+from __future__ import annotations
+
 import asyncio
-import aiohttp
-import os
-import stat
 import logging
-import zipfile
-import io
+import re
 from datetime import timedelta
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from .const import DOMAIN, DOWNLOAD_URL, BINARY_PATH
+from typing import Any
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import (
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+
+from .const import (
+    DOMAIN,
+    CONF_AUTO_UPDATE,
+    CONF_SCAN_INTERVAL,
+    CONF_SERVER_ID,
+    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SERVER_ID,
+    ATTR_DOWNLOAD,
+    ATTR_UPLOAD,
+    ATTR_PING,
+    ATTR_JITTER,
+    ATTR_ISP,
+    ATTR_SERVER,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-class SpeedtestRtCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, session: aiohttp.ClientSession):
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=timedelta(hours=1))
-        self.session = session
 
-    async def _async_update_data(self):
-        if not os.path.exists(BINARY_PATH):
-            _LOGGER.info("Downloading QMS speedtest binary from %s", DOWNLOAD_URL)
-            await self._download_binary()
+class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Coordinator for Speedtest RT.RU."""
 
-        proc = await asyncio.create_subprocess_exec(
-            BINARY_PATH, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    def __init__(
+        self, hass: HomeAssistant, entry: ConfigEntry, binary_path: str
+    ) -> None:
+        """Initialize the coordinator."""
+        self._binary_path = binary_path
+        self.entry = entry
+
+        # Get server_id from options or data
+        options = entry.options
+        self._server_id = options.get(
+            CONF_SERVER_ID,
+            entry.data.get(CONF_SERVER_ID, DEFAULT_SERVER_ID)
         )
-        stdout, stderr = await proc.communicate()
 
-        if stderr:
-            _LOGGER.warning("Speedtest error output: %s", stderr.decode())
+        # Set update interval based on options (no polling if auto_update=False)
+        auto_update = options.get(CONF_AUTO_UPDATE, True)
+        interval = timedelta(
+            seconds=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        ) if auto_update else None
 
-        return self._parse_output(stdout.decode())
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_interval=interval,
+        )
 
-    async def _download_binary(self):
-        async with self.session.get(DOWNLOAD_URL) as resp:
-            data = await resp.read()
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Fetch data from QMS binary."""
+        try:
+            # Build command arguments
+            cmd_args = [self._binary_path]
 
-        # Extract the binary from the zip archive
-        os.makedirs(os.path.dirname(BINARY_PATH), exist_ok=True)
-        with zipfile.ZipFile(io.BytesIO(data)) as z:
-            z.extractall(os.path.dirname(BINARY_PATH))
+            # Add server selection if not "auto"
+            if self._server_id and self._server_id != "auto":
+                cmd_args.extend(["-S", self._server_id])
 
-        # Make the extracted binary executable
-        if os.path.exists(BINARY_PATH):
-            os.chmod(BINARY_PATH, os.stat(BINARY_PATH).st_mode | stat.S_IEXEC)
-            _LOGGER.info("QMS speedtest binary downloaded and made executable.")
-        else:
-            _LOGGER.error("Failed to find extracted binary at %s", BINARY_PATH)
+            proc = await asyncio.create_subprocess_exec(
+                *cmd_args,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
 
-    def _parse_output(self, text: str):
-        result = {}
-        for line in text.splitlines():
-            if ":" in line:
-                key, val = line.split(":", 1)
-                result[key.strip()] = val.strip()
-        _LOGGER.debug("Parsed speedtest output: %s", result)
-        return result
+            try:
+                stdout, stderr = await asyncio.wait_for(
+                    proc.communicate(), timeout=120
+                )
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+                raise UpdateFailed("Speedtest timed out after 120 seconds")
+
+            output = stdout.decode("utf-8", errors="ignore").strip()
+
+            _LOGGER.debug("QMS Raw Output: %s", output)
+            if stderr:
+                _LOGGER.debug("QMS Stderr: %s", stderr.decode("utf-8", errors="ignore"))
+
+            # Parse with regex (English labels from QMS binary)
+            data = self._parse_output(output)
+            return data
+
+        except UpdateFailed:
+            raise
+        except Exception as err:
+            _LOGGER.error("Error running QMS binary: %s", err)
+            raise UpdateFailed(f"Failed to update: {err}") from err
+
+    def _parse_output(self, output: str) -> dict[str, str]:
+        """Parse QMS binary output."""
+        data = {
+            ATTR_DOWNLOAD: "unknown",
+            ATTR_UPLOAD: "unknown",
+            ATTR_PING: "unknown",
+            ATTR_JITTER: "unknown",
+            ATTR_ISP: "unknown",
+            ATTR_SERVER: "unknown",
+        }
+
+        # Regex patterns for English QMS output (case-insensitive, multi-line)
+        patterns = {
+            ATTR_PING: r"Idle Latency:\s*(\d+(?:\.\d+)?)\s*ms",
+            ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)\s*ms",
+            ATTR_DOWNLOAD: r"Download:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
+            ATTR_UPLOAD: r"Upload:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
+            ATTR_ISP: r"ISP:\s*([^\n]+)",
+            ATTR_SERVER: r"Server:\s*([^\n]+)",
+        }
+
+        for attr, pattern in patterns.items():
+            match = re.search(pattern, output, re.IGNORECASE | re.MULTILINE)
+            if match:
+                data[attr] = match.group(1).strip()
+
+        return data
