@@ -12,6 +12,9 @@
           "auto_update": "Enable automatic speedtest updates at the specified interval"
         }
       }
+    },
+    "abort": {
+      "single_instance_allowed": "Already configured. Only a single configuration possible."
     }
   },
   "options": {
@@ -29,6 +32,39 @@
           "auto_update": "Enable automatic speedtest updates at the specified interval"
         }
       }
+    }
+  },
+  "entity": {
+    "button": {
+      "run_speedtest": {
+        "name": "Run Speedtest"
+      }
+    },
+    "sensor": {
+      "download": {
+        "name": "Download"
+      },
+      "upload": {
+        "name": "Upload"
+      },
+      "ping": {
+        "name": "Ping"
+      },
+      "jitter": {
+        "name": "Jitter"
+      },
+      "isp": {
+        "name": "ISP"
+      },
+      "server": {
+        "name": "Server"
+      }
+    }
+  },
+  "services": {
+    "perform_test": {
+      "name": "Perform Speed Test",
+      "description": "Manually triggers a speed test using the RT.RU QMS binary and updates the sensors."
     }
   }
 }
