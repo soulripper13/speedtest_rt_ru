@@ -40,12 +40,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Create coordinator
     coordinator = SpeedtestCoordinator(hass, entry, binary_path)
 
-    # Initial refresh—raise NotReady if fails
-    try:
-        await coordinator.async_config_entry_first_refresh()
-    except Exception as err:
-        _LOGGER.error("Initial update failed: %s", err)
-        raise ConfigEntryNotReady("Speedtest initial run failed") from err
+    # Set initial data to avoid blocking setup with a speedtest
+    # The first update will happen according to the configured scan interval
+    coordinator.async_set_updated_data({
+        "download": "unknown",
+        "upload": "unknown",
+        "ping": "unknown",
+        "jitter": "unknown",
+        "isp": "unknown",
+        "server": "unknown",
+    })
 
     # Store in hass.data (coordinator available for all platforms)
     hass.data.setdefault(DOMAIN, {})
