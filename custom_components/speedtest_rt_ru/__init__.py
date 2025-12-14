@@ -20,7 +20,8 @@ from .const import (
     DEFAULT_AUTO_UPDATE,
     DEFAULT_SCAN_INTERVAL,
     BINARY_NAME,
-    BINARY_URL,
+    BINARY_URL_X86,
+    BINARY_URL_ARM64,
     BINARY_DIR,
 )
 from .coordinator import SpeedtestCoordinator
@@ -152,11 +153,20 @@ async def get_available_servers(binary_path: str) -> dict[str, str]:
 async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | None:
     """Download and extract the QMS binary ZIP if not present."""
     machine = platform.machine()
-    if machine != "x86_64":
-        _LOGGER.warning(
-            "QMS binary is x86_64 only. Running on %s—consider manual binary or alternative.",
+
+    # Determine which binary URL to use based on architecture
+    if machine == "x86_64":
+        binary_url = BINARY_URL_X86
+        _LOGGER.debug("Detected x86_64 architecture, using x86 binary")
+    elif machine in ("aarch64", "arm64"):
+        binary_url = BINARY_URL_ARM64
+        _LOGGER.debug("Detected ARM64 architecture (%s), using ARM64 binary", machine)
+    else:
+        _LOGGER.error(
+            "Unsupported architecture: %s. Only x86_64 and ARM64 (aarch64) are supported.",
             machine,
         )
+        return None
 
     binary_dir = Path(hass.config.path(BINARY_DIR))
     # No mkdir—component dir exists
@@ -170,9 +180,9 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
     session = async_get_clientsession(hass)
     zip_path = binary_dir / "qms_lib.zip"
     try:
-        async with session.get(BINARY_URL) as resp:
+        async with session.get(binary_url) as resp:
             if resp.status != 200:
-                _LOGGER.error("Failed to download ZIP from %s: %s", BINARY_URL, resp.status)
+                _LOGGER.error("Failed to download ZIP from %s: %s", binary_url, resp.status)
                 return None
             content = await resp.read()
 
