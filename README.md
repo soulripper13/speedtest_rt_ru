@@ -29,7 +29,7 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 - **Diagnostics support** – troubleshoot issues via Settings > Integrations
 - **Timeout protection** – tests automatically timeout after 120 seconds
 - Fully compatible with Home Assistant and HACS
-- Works only on **x86_64** systems
+- Works on **x86_64** and **ARM64 (aarch64)** systems
 - Requires **Home Assistant 2024.1+**
 ---
 ### Installation
@@ -100,7 +100,7 @@ This provides useful information for troubleshooting.
 
 ---
 ### Troubleshooting
-- **`Exec format error`** → Ensure your system architecture is **x86_64**.
+- **`Exec format error`** → Ensure your system architecture is **x86_64** or **ARM64 (aarch64)**.
 - **Binary download fails** → Verify [speedtest.rt.ru](https://speedtest.rt.ru) is reachable.
 - **Test hangs** → Tests automatically timeout after 120 seconds.
 - Logs are available under **Settings → System → Logs**.
@@ -129,7 +129,7 @@ This provides useful information for troubleshooting.
 - **Поддержка диагностики** – устранение неполадок через Настройки > Интеграции
 - **Защита от зависания** – тесты автоматически прерываются через 120 секунд
 - Полная совместимость с Home Assistant и HACS
-- Работает только на **x86_64** системах
+- Работает на **x86_64** и **ARM64 (aarch64)** системах
 - Требует **Home Assistant 2024.1+**
 ---
 ### Установка
@@ -200,7 +200,7 @@ This provides useful information for troubleshooting.
 
 ---
 ### Устранение неполадок
-- Ошибка **`Exec format error`** → убедитесь, что используется архитектура **x86_64**.
+- Ошибка **`Exec format error`** → убедитесь, что используется архитектура **x86_64** или **ARM64 (aarch64)**.
 - Проблемы со скачиванием → проверьте доступность [speedtest.rt.ru](https://speedtest.rt.ru).
 - **Тест зависает** → тесты автоматически прерываются через 120 секунд.
 - Логи доступны в **Настройки → Система → Журналы**.
