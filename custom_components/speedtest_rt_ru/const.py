@@ -22,5 +22,6 @@ ATTR_SERVER = "server"
 
 # Binary paths and URLs
 BINARY_NAME = "qms_lib"
-BINARY_URL = "https://lib.qms.ru/bin/linux/qms_lib.zip"
+BINARY_URL_X86 = "https://lib.qms.ru/bin/linux/qms_lib.zip"
+BINARY_URL_ARM64 = "https://lib.qms.ru/bin/linux_arm64/qms_lib.zip"
 BINARY_DIR = "custom_components/speedtest_rt_ru"
