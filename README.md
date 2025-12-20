@@ -4,6 +4,7 @@
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 [![Community Forum][forum-shield]][forum]
+![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
 ---
 ## English
 **Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed.
@@ -212,7 +213,7 @@ This provides useful information for troubleshooting.
 - Developed by [soulripper13](https://github.com/soulripper13)
 ---
 [hacs]: https://github.com/hacs/integration
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-41BDF5?style=for-the-badge
+[hacsbadge]: https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge
 [hacs-repo-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
 [hacs-repo]: https://my.home-assistant.io/redirect/hacs_repository/?owner=soulripper13&repository=speedtest_rt_ru&category=integration
 [config-flow-badge]: https://my.home-assistant.io/badges/config_flow_start.svg
