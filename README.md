@@ -5,6 +5,7 @@
 [![License][license-shield]](LICENSE)
 [![Community Forum][forum-shield]][forum]
 ![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
+[![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)](#support-the-project)
 ---
 ## English
 **Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed.
@@ -106,6 +107,35 @@ This provides useful information for troubleshooting.
 - **Test hangs** → Tests automatically timeout after 120 seconds.
 - Logs are available under **Settings → System → Logs**.
 ---
+## Support the Project
+
+This integration is developed and maintained in spare time and is provided free to the Home Assistant community.
+
+If you find it useful and would like to support ongoing development, maintenance, and improvements, any contribution is appreciated — but never required ❤️
+
+### Ways to Support
+
+* **PayPal**
+  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
+
+* **Bitcoin (BTC)**
+  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
+
+* **Solana (SOL)**
+  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
+
+You can also help by:
+
+* Reporting bugs
+* Submitting pull requests
+* Suggesting features
+* Helping other users
+* Starring the repository ⭐
+
+Thank you for being part of the Home Assistant community.
+
+---
+
 ## Русский
 **Speedtest RT.RU** — интеграция для Home Assistant, автоматически загружающая и запускающая бинарник QMS с [RT.RU](https://speedtest.rt.ru) для измерения скорости интернета.
 
@@ -206,6 +236,29 @@ This provides useful information for troubleshooting.
 - **Тест зависает** → тесты автоматически прерываются через 120 секунд.
 - Логи доступны в **Настройки → Система → Журналы**.
 ---
+### Поддержите проект
+Эта интеграция разрабатывается и поддерживается в свободное время и предоставляется бесплатно сообществу Home Assistant.
+Если вы находите её полезной и хотите поддержать дальнейшую разработку, сопровождение и улучшения, любая помощь будет высоко оценена — но никогда не обязательна ❤️
+
+### Способы поддержки
+* **PayPal**  
+  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
+* **Bitcoin (BTC)**  
+  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
+* **Solana (SOL)**  
+  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
+
+Вы также можете помочь:
+* Сообщая об ошибках
+* Отправляя pull-запросы
+* Предлагая новые функции
+* Помогая другим пользователям
+* Поставив звёздочку репозиторию ⭐
+
+Спасибо, что вы часть сообщества Home Assistant!
+
+---
+
 ## Links and Credits
 - [RT.RU Speedtest](https://speedtest.rt.ru)
 - [Home Assistant](https://www.home-assistant.io)
