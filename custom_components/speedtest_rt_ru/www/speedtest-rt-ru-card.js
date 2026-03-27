@@ -107,10 +107,16 @@ class SpeedtestRtRuCard extends HTMLElement {
         ...(config.entities || {}),
       }
     };
+    if (this.isConnected) {
+      this.render();
+    }
   }
 
   set hass(hass) {
     this._hass = hass;
+    if (!this.querySelector('.card')) {
+      this.render();
+    }
     this.updateCard();
   }
 
@@ -697,6 +703,10 @@ class SpeedtestRtRuCard extends HTMLElement {
     this.querySelector('.gauge-upload')?.addEventListener('click', () => this._showMoreInfo(entities.upload));
     this.querySelector('.metric-ping')?.addEventListener('click', () => this._showMoreInfo(entities.ping));
     this.querySelector('.metric-jitter')?.addEventListener('click', () => this._showMoreInfo(entities.jitter));
+
+    if (this._hass) {
+      this.updateCard();
+    }
   }
 }
 

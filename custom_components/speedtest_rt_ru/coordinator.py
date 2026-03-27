@@ -107,7 +107,7 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             # Parse with regex (English labels from QMS binary)
             data = self._parse_output(output)
-            data[ATTR_DATE_LAST_TEST] = datetime.now(timezone.utc).isoformat()
+            data[ATTR_DATE_LAST_TEST] = datetime.now(timezone.utc)
             return data
 
         except UpdateFailed:
@@ -139,7 +139,7 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         # Regex patterns matching actual QMS binary output format
         patterns = {
-            ATTR_PING: r"Ping:\s*(\d+(?:\.\d+)?)",
+            ATTR_PING: r"^Ping:\s*(\d+(?:\.\d+)?)",
             ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)",
             ATTR_DOWNLOAD: r"Download:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
             ATTR_UPLOAD: r"Upload:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
