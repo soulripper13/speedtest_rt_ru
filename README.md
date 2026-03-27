@@ -303,12 +303,8 @@ entities:
 - `button.speedtest_rt_ru_run_speedtest`
 
 Дополнительные сенсоры задержки (отключены по умолчанию, включить в настройках объектов):
-- `sensor.speedtest_rt_ru_ping_during_download` — пинг IQM во время загрузки
-- `sensor.speedtest_rt_ru_ping_low_during_download` / `ping_high_during_download`
-- `sensor.speedtest_rt_ru_jitter_during_download`
-- `sensor.speedtest_rt_ru_ping_during_upload` — пинг IQM во время отдачи
-- `sensor.speedtest_rt_ru_ping_low_during_upload` / `ping_high_during_upload`
-- `sensor.speedtest_rt_ru_jitter_during_upload`
+- `sensor.speedtest_rt_ru_ping_during_download` — задержка во время фазы загрузки
+- `sensor.speedtest_rt_ru_ping_during_upload` — задержка во время фазы отдачи
 
 Используйте их в автоматизациях, Lovelace-дэшбордах и для мониторинга соединения.
 
