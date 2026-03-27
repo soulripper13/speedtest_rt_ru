@@ -132,6 +132,8 @@ def _register_services(hass: HomeAssistant) -> None:
 
         coordinator = None
         for entry_id, data in hass_data.items():
+            if not isinstance(data, dict):
+                continue
             coordinator = data.get("coordinator")
             if coordinator:
                 break
