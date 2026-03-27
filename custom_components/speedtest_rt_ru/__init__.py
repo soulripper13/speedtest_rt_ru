@@ -25,6 +25,7 @@ from .const import (
     BINARY_DIR,
 )
 from .coordinator import SpeedtestCoordinator
+from .www_manager import async_setup_cards, async_register_cards, async_remove_cards_and_resources
 
 PLATFORMS = [Platform.SENSOR, Platform.BUTTON]
 
@@ -65,6 +66,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Register service for manual trigger
     _register_services(hass)
 
+    # Install and register Lovelace cards
+    await async_setup_cards(hass)
+    hass.async_create_task(async_register_cards(hass))
+
     # Listen for options changes
     entry.async_on_unload(entry.add_update_listener(async_options_updated))
 
@@ -75,6 +80,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
+        # Remove Lovelace cards and resources when integration is removed
+        if not hass.data[DOMAIN]:
+            await async_remove_cards_and_resources(hass)
     return unload_ok
 
 async def async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
