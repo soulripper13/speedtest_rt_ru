@@ -1,6 +1,7 @@
 {
   "domain": "speedtest_rt_ru",
   "name": "Speedtest RT.RU",
+  "after_dependencies": ["lovelace"],
   "codeowners": ["@soulripper13"],
   "config_flow": true,
   "dependencies": [],
