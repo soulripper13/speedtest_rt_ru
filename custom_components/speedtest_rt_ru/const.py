@@ -25,3 +25,8 @@ BINARY_NAME = "qms_lib"
 BINARY_URL_X86 = "https://lib.qms.ru/bin/linux/qms_lib.zip"
 BINARY_URL_ARM64 = "https://lib.qms.ru/bin/linux_arm64/qms_lib.zip"
 BINARY_DIR = "custom_components/speedtest_rt_ru"
+
+# Binary auto-update
+BINARY_UPDATE_INTERVAL_HOURS = 24  # Check for binary updates every 24 hours
+STORAGE_KEY_ETAG_X86 = "binary_etag_x86"
+STORAGE_KEY_ETAG_ARM64 = "binary_etag_arm64"

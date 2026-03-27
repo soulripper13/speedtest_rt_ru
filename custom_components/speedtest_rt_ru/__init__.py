@@ -4,14 +4,14 @@ import logging
 import os
 import platform
 import zipfile
+from datetime import timedelta
 from pathlib import Path
 
-import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
     DOMAIN,
@@ -23,6 +23,9 @@ from .const import (
     BINARY_URL_X86,
     BINARY_URL_ARM64,
     BINARY_DIR,
+    BINARY_UPDATE_INTERVAL_HOURS,
+    STORAGE_KEY_ETAG_X86,
+    STORAGE_KEY_ETAG_ARM64,
 )
 from .coordinator import SpeedtestCoordinator
 from .www_manager import async_setup_cards, async_register_cards, async_remove_cards_and_resources
@@ -30,6 +33,7 @@ from .www_manager import async_setup_cards, async_register_cards, async_remove_c
 PLATFORMS = [Platform.SENSOR, Platform.BUTTON]
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Speedtest RT.RU from a config entry."""
@@ -43,7 +47,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = SpeedtestCoordinator(hass, entry, binary_path)
 
     # Set initial data to avoid blocking setup with a speedtest
-    # The first update will happen according to the configured scan interval
     coordinator.async_set_updated_data({
         "download": "unknown",
         "upload": "unknown",
@@ -53,7 +56,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "server": "unknown",
     })
 
-    # Store in hass.data (coordinator available for all platforms)
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
         "binary_path": binary_path,
@@ -70,13 +72,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await async_setup_cards(hass)
     hass.async_create_task(async_register_cards(hass))
 
+    # Schedule periodic binary update checks
+    cancel_updater = async_track_time_interval(
+        hass,
+        lambda now: hass.async_create_task(_check_binary_update(hass, entry)),
+        timedelta(hours=BINARY_UPDATE_INTERVAL_HOURS),
+    )
+    hass.data[DOMAIN][entry.entry_id]["cancel_updater"] = cancel_updater
+
     # Listen for options changes
     entry.async_on_unload(entry.add_update_listener(async_options_updated))
 
     return True
 
+
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
+    # Cancel the binary update checker
+    entry_data = hass.data[DOMAIN].get(entry.entry_id, {})
+    cancel_updater = entry_data.get("cancel_updater")
+    if cancel_updater:
+        cancel_updater()
+
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
@@ -85,9 +102,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             await async_remove_cards_and_resources(hass)
     return unload_ok
 
+
 async def async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle options update."""
     await hass.config_entries.async_reload(entry.entry_id)
+
 
 @callback
 def _register_services(hass: HomeAssistant) -> None:
@@ -118,6 +137,66 @@ def _register_services(hass: HomeAssistant) -> None:
     if not hass.services.has_service(DOMAIN, "perform_test"):
         hass.services.async_register(DOMAIN, "perform_test", async_perform_test)
 
+
+def _get_binary_url() -> tuple[str, str]:
+    """Return (binary_url, etag_storage_key) for the current architecture."""
+    machine = platform.machine()
+    if machine in ("aarch64", "arm64"):
+        return BINARY_URL_ARM64, STORAGE_KEY_ETAG_ARM64
+    return BINARY_URL_X86, STORAGE_KEY_ETAG_X86
+
+
+async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Check if a newer binary is available via HEAD request and update if so."""
+    binary_url, etag_key = _get_binary_url()
+    session = async_get_clientsession(hass)
+
+    try:
+        async with session.head(binary_url, allow_redirects=True) as resp:
+            if resp.status != 200:
+                _LOGGER.debug("Binary update check returned status %s", resp.status)
+                return
+
+            remote_etag = resp.headers.get("ETag") or resp.headers.get("Last-Modified")
+            if not remote_etag:
+                _LOGGER.debug("No ETag/Last-Modified header, skipping update check")
+                return
+
+        # Compare with stored ETag
+        stored_etag = hass.data[DOMAIN].get(etag_key)
+        if stored_etag and stored_etag == remote_etag:
+            _LOGGER.debug("Binary is up to date (ETag: %s)", remote_etag)
+            return
+
+        _LOGGER.info(
+            "New binary version detected (ETag: %s -> %s), downloading update",
+            stored_etag,
+            remote_etag,
+        )
+
+        new_binary_path = await _download_binary(hass, entry, force=True)
+        if not new_binary_path:
+            _LOGGER.error("Binary update download failed")
+            return
+
+        # Store new ETag
+        hass.data[DOMAIN][etag_key] = remote_etag
+
+        # Update binary path in all active entry data and coordinators
+        for entry_id, data in hass.data[DOMAIN].items():
+            if not isinstance(data, dict):
+                continue
+            coordinator = data.get("coordinator")
+            if coordinator and hasattr(coordinator, "_binary_path"):
+                coordinator._binary_path = new_binary_path
+                data["binary_path"] = new_binary_path
+
+        _LOGGER.info("Binary updated successfully to %s", new_binary_path)
+
+    except Exception as err:
+        _LOGGER.error("Error during binary update check: %s", err)
+
+
 async def get_available_servers(binary_path: str) -> dict[str, str]:
     """Fetch available servers from QMS binary."""
     try:
@@ -132,7 +211,6 @@ async def get_available_servers(binary_path: str) -> dict[str, str]:
 
         servers = {"auto": "Auto (Best Server)"}
 
-        # Parse server list - skip header lines
         in_server_list = False
         for line in output.splitlines():
             if "===============" in line:
@@ -140,14 +218,11 @@ async def get_available_servers(binary_path: str) -> dict[str, str]:
                 continue
 
             if in_server_list and line.strip():
-                # Parse line format: ID  Name  City  Region
                 parts = line.split(maxsplit=3)
                 if len(parts) >= 3 and parts[0].isdigit():
                     server_id = parts[0]
                     server_name = parts[1] if len(parts) > 1 else ""
                     server_city = parts[2] if len(parts) > 2 else ""
-
-                    # Create display name: "City - Name"
                     display_name = f"{server_city} - {server_name}" if server_city else server_name
                     servers[server_id] = display_name
 
@@ -158,60 +233,52 @@ async def get_available_servers(binary_path: str) -> dict[str, str]:
         _LOGGER.error("Error fetching server list: %s", err)
         return {"auto": "Auto (Best Server)"}
 
-async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | None:
-    """Download and extract the QMS binary ZIP if not present."""
-    machine = platform.machine()
 
-    # Determine which binary URL to use based on architecture
-    if machine == "x86_64":
-        binary_url = BINARY_URL_X86
-        _LOGGER.debug("Detected x86_64 architecture, using x86 binary")
-    elif machine in ("aarch64", "arm64"):
-        binary_url = BINARY_URL_ARM64
-        _LOGGER.debug("Detected ARM64 architecture (%s), using ARM64 binary", machine)
-    else:
-        _LOGGER.error(
-            "Unsupported architecture: %s. Only x86_64 and ARM64 (aarch64) are supported.",
-            machine,
-        )
-        return None
+async def _download_binary(
+    hass: HomeAssistant, entry: ConfigEntry, force: bool = False
+) -> str | None:
+    """Download and extract the QMS binary ZIP.
+
+    If force=False, skips download when the binary already exists and is executable.
+    If force=True, always re-downloads (used for updates).
+    Stores the remote ETag in hass.data after a successful download.
+    """
+    binary_url, etag_key = _get_binary_url()
 
     binary_dir = Path(hass.config.path(BINARY_DIR))
-    # No mkdir—component dir exists
     binary_path = binary_dir / BINARY_NAME
 
-    if binary_path.exists() and os.access(str(binary_path), os.X_OK):
-        _LOGGER.debug("QMS binary already exists and is executable at %s", binary_path)
+    if not force and binary_path.exists() and os.access(str(binary_path), os.X_OK):
+        _LOGGER.debug("QMS binary already exists at %s", binary_path)
+        # Seed ETag on first boot so the next check has something to compare
+        if etag_key not in hass.data.get(DOMAIN, {}):
+            await _store_remote_etag(hass, binary_url, etag_key)
         return str(binary_path)
 
-    # Download ZIP
     session = async_get_clientsession(hass)
     zip_path = binary_dir / "qms_lib.zip"
+
     try:
         async with session.get(binary_url) as resp:
             if resp.status != 200:
                 _LOGGER.error("Failed to download ZIP from %s: %s", binary_url, resp.status)
                 return None
             content = await resp.read()
+            remote_etag = resp.headers.get("ETag") or resp.headers.get("Last-Modified")
 
-        # Write file in executor to avoid blocking
         await hass.async_add_executor_job(zip_path.write_bytes, content)
         _LOGGER.debug("Downloaded QMS ZIP to %s", zip_path)
 
-        # Extract ZIP in executor to avoid blocking
         def extract_zip():
-            with zipfile.ZipFile(zip_path, 'r') as zf:
+            with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(binary_dir)
 
         await hass.async_add_executor_job(extract_zip)
-        _LOGGER.debug("Extracted QMS ZIP contents to %s", binary_dir)
 
-        # Find and chmod the binary (assume named 'qms_lib'; fallback to first executable)
         extracted_binary = binary_dir / BINARY_NAME
         if not extracted_binary.exists():
-            # Fallback: chmod any non-dir file (adjust if multiple)
             for file_path in binary_dir.iterdir():
-                if file_path.is_file() and file_path.name != "qms_lib.zip":  # Skip ZIP
+                if file_path.is_file() and file_path.name != "qms_lib.zip":
                     extracted_binary = file_path
                     _LOGGER.info("Using extracted binary: %s", extracted_binary.name)
                     break
@@ -219,11 +286,14 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
                 _LOGGER.error("No executable found in ZIP")
                 return None
 
-        # Chmod in executor to avoid blocking
         await hass.async_add_executor_job(os.chmod, str(extracted_binary), 0o755)
-        # Cleanup ZIP in executor
         await hass.async_add_executor_job(zip_path.unlink)
-        _LOGGER.info("Extracted and made executable QMS binary at %s", extracted_binary)
+        _LOGGER.info("QMS binary ready at %s", extracted_binary)
+
+        # Store ETag so future checks can detect updates
+        if remote_etag:
+            hass.data.setdefault(DOMAIN, {})[etag_key] = remote_etag
+
         return str(extracted_binary)
 
     except Exception as err:
@@ -231,3 +301,16 @@ async def _download_binary(hass: HomeAssistant, entry: ConfigEntry) -> str | Non
         if zip_path.exists():
             await hass.async_add_executor_job(zip_path.unlink)
         return None
+
+
+async def _store_remote_etag(hass: HomeAssistant, binary_url: str, etag_key: str) -> None:
+    """Do a HEAD request to seed the stored ETag without downloading the binary."""
+    session = async_get_clientsession(hass)
+    try:
+        async with session.head(binary_url, allow_redirects=True) as resp:
+            etag = resp.headers.get("ETag") or resp.headers.get("Last-Modified")
+            if etag:
+                hass.data.setdefault(DOMAIN, {})[etag_key] = etag
+                _LOGGER.debug("Seeded binary ETag: %s", etag)
+    except Exception as err:
+        _LOGGER.debug("Could not seed binary ETag: %s", err)
