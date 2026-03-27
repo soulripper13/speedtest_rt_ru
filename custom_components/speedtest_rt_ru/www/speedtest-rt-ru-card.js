@@ -2,7 +2,7 @@
  * Speedtest RT.RU Card for Home Assistant
  * A custom Lovelace card that recreates the iconic Ookla Speedtest interface
  *
- * Version: 1.0.0
+ * Version: 1.1.0
  *
  * Layout Compatibility:
  * - Masonry: Returns card size for proper column distribution
@@ -27,6 +27,9 @@ const RTRU_TRANSLATIONS = {
     rt_ru_speedtest: "RT.RU Speedtest",
     mbps: "Mbps",
     ms: "ms",
+    result: "View Result",
+    last_test: "Last test",
+    ip: "IP",
   },
   ru: {
     download: "Загрузка",
@@ -42,6 +45,9 @@ const RTRU_TRANSLATIONS = {
     rt_ru_speedtest: "Спидтест RT.RU",
     mbps: "Мбит/с",
     ms: "мс",
+    result: "Результат",
+    last_test: "Последний тест",
+    ip: "IP",
   }
 };
 
@@ -66,7 +72,10 @@ class SpeedtestRtRuCard extends HTMLElement {
         ping: "sensor.speedtest_rt_ru_ping",
         jitter: "sensor.speedtest_rt_ru_jitter",
         isp: "sensor.speedtest_rt_ru_isp",
-        server: "sensor.speedtest_rt_ru_server"
+        server: "sensor.speedtest_rt_ru_server",
+        result_url: "sensor.speedtest_rt_ru_result_url",
+        last_test: "sensor.speedtest_rt_ru_last_test",
+        ip: "sensor.speedtest_rt_ru_ip",
       },
       language: "en",
       labels: {},
@@ -80,7 +89,6 @@ class SpeedtestRtRuCard extends HTMLElement {
   _t(key) {
     const lang = this._config.language || 'en';
     const tr = RTRU_TRANSLATIONS[lang] || RTRU_TRANSLATIONS.en;
-    // User-defined label overrides translation
     if (this._config.labels && this._config.labels[key] !== undefined) {
       return this._config.labels[key];
     }
@@ -93,7 +101,11 @@ class SpeedtestRtRuCard extends HTMLElement {
     }
     this._config = {
       ...SpeedtestRtRuCard.getStubConfig(),
-      ...config
+      ...config,
+      entities: {
+        ...SpeedtestRtRuCard.getStubConfig().entities,
+        ...(config.entities || {}),
+      }
     };
   }
 
@@ -115,17 +127,11 @@ class SpeedtestRtRuCard extends HTMLElement {
   }
 
   static getLayoutOptions() {
-    return {
-      grid_columns: null,
-      grid_rows: null,
-    };
+    return { grid_columns: null, grid_rows: null };
   }
 
   getLayoutOptions() {
-    return {
-      grid_columns: null,
-      grid_rows: null,
-    };
+    return { grid_columns: null, grid_rows: null };
   }
 
   updateCard() {
@@ -138,6 +144,9 @@ class SpeedtestRtRuCard extends HTMLElement {
     const jitter = this._getState(entities.jitter);
     const isp = this._getState(entities.isp);
     const server = this._getState(entities.server);
+    const resultUrl = this._getState(entities.result_url);
+    const lastTest = this._getState(entities.last_test);
+    const ip = this._getState(entities.ip);
 
     this._updateGauge('download', download, this._config.max_download);
     this._updateGauge('upload', upload, this._config.max_upload);
@@ -147,8 +156,38 @@ class SpeedtestRtRuCard extends HTMLElement {
 
     const ispEl = this.querySelector('.isp-name');
     const serverEl = this.querySelector('.server-name span');
+    const ipEl = this.querySelector('.ip-address');
     if (ispEl) ispEl.textContent = isp || this._t('unknown_isp');
     if (serverEl) serverEl.textContent = server || this._t('unknown_server');
+    if (ipEl) ipEl.textContent = ip ? `${this._t('ip')}: ${ip}` : '';
+
+    // Result URL link
+    const resultLink = this.querySelector('.result-link');
+    if (resultLink) {
+      if (resultUrl && resultUrl !== 'unknown' && resultUrl.startsWith('http')) {
+        resultLink.href = resultUrl;
+        resultLink.style.display = 'inline-flex';
+        resultLink.textContent = this._t('result');
+      } else {
+        resultLink.style.display = 'none';
+      }
+    }
+
+    // Last test time
+    const lastTestEl = this.querySelector('.last-test');
+    if (lastTestEl) {
+      if (lastTest && lastTest !== 'unknown') {
+        try {
+          const date = new Date(lastTest);
+          lastTestEl.textContent = `${this._t('last_test')}: ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${date.toLocaleDateString()}`;
+          lastTestEl.style.display = 'block';
+        } catch {
+          lastTestEl.style.display = 'none';
+        }
+      } else {
+        lastTestEl.style.display = 'none';
+      }
+    }
   }
 
   _getState(entityId) {
@@ -309,6 +348,12 @@ class SpeedtestRtRuCard extends HTMLElement {
           display: flex;
           align-items: center;
           gap: 6px;
+          margin-bottom: 4px;
+        }
+
+        .ip-address {
+          font-size: 11px;
+          color: #64748b;
         }
 
         .gauges-container {
@@ -498,13 +543,51 @@ class SpeedtestRtRuCard extends HTMLElement {
         .metric-jitter .metric-value { color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.3); }
 
         .footer {
-          text-align: center;
-          padding-top: 16px;
+          padding-top: 12px;
           border-top: 1px solid rgba(255,255,255,0.05);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+
+        .footer-row {
           display: flex;
           justify-content: center;
           align-items: center;
-          flex-shrink: 0;
+          gap: 12px;
+          width: 100%;
+        }
+
+        .result-link {
+          display: none;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: #22d3ee;
+          text-decoration: none;
+          padding: 4px 10px;
+          border-radius: 20px;
+          border: 1px solid rgba(34, 211, 238, 0.3);
+          background: rgba(34, 211, 238, 0.05);
+          transition: background 0.2s, border-color 0.2s;
+        }
+
+        .result-link:hover {
+          background: rgba(34, 211, 238, 0.12);
+          border-color: rgba(34, 211, 238, 0.5);
+        }
+
+        .last-test {
+          display: none;
+          font-size: 10px;
+          color: #475569;
+        }
+
+        .branding {
+          font-size: 11px;
+          color: #64748b;
         }
 
         @container (max-width: 450px) {
@@ -535,6 +618,7 @@ class SpeedtestRtRuCard extends HTMLElement {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>-</span>
             </div>
+            <div class="ip-address"></div>
           </div>
 
           <div class="gauges-container">
@@ -591,7 +675,13 @@ class SpeedtestRtRuCard extends HTMLElement {
           </div>
 
           <div class="footer">
-            <span style="font-size:11px;color:#64748b;">${this._t('rt_ru_speedtest')}</span>
+            <div class="footer-row">
+              <span class="branding">${this._t('rt_ru_speedtest')}</span>
+              <a class="result-link" target="_blank" rel="noopener noreferrer">
+                🔗 ${this._t('result')}
+              </a>
+            </div>
+            <div class="last-test"></div>
           </div>
         </div>
       </div>
@@ -723,7 +813,10 @@ class SpeedtestRtRuCardEditor extends HTMLElement {
       { key: 'ping', label: 'Ping Latency' },
       { key: 'jitter', label: 'Jitter' },
       { key: 'isp', label: 'ISP Name' },
-      { key: 'server', label: 'Server Name' }
+      { key: 'server', label: 'Server Name' },
+      { key: 'result_url', label: 'Result URL' },
+      { key: 'last_test', label: 'Last Test' },
+      { key: 'ip', label: 'IP Address' },
     ];
 
     entityFields.forEach(f => entitiesDiv.appendChild(createPicker(f.key, f.label)));
@@ -744,4 +837,4 @@ window.customCards.push({
   documentationURL: "https://github.com/katoaroosultan/speedtest_rt_ru"
 });
 
-console.info("%c SPEEDTEST RT.RU CARD %c v1.0.0 ", "background: #0ea5e9; color: #fff; font-weight: bold;", "background: #1e293b; color: #fff;");
+console.info("%c SPEEDTEST RT.RU CARD %c v1.1.0 ", "background: #0ea5e9; color: #fff; font-weight: bold;", "background: #1e293b; color: #fff;");

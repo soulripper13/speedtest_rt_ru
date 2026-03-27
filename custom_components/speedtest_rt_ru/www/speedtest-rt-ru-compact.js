@@ -2,7 +2,7 @@
  * Speedtest RT.RU Card - Compact Version (Bubble Style)
  * Minimalist pill-shaped card inspired by Bubble Card design
  *
- * Version: 1.0.0
+ * Version: 1.1.0
  *
  * Supports English and Russian UI (language: "en" | "ru")
  */
@@ -320,4 +320,4 @@ window.customCards.push({
   preview: true
 });
 
-console.info("%c SPEEDTEST RT.RU COMPACT %c v1.0.0 ", "background: #0ea5e9; color: #fff; font-weight: bold;", "background: #1e293b; color: #fff;");
+console.info("%c SPEEDTEST RT.RU COMPACT %c v1.1.0 ", "background: #0ea5e9; color: #fff; font-weight: bold;", "background: #1e293b; color: #fff;");

@@ -25,10 +25,33 @@ from .const import (
     ATTR_JITTER,
     ATTR_ISP,
     ATTR_SERVER,
+    ATTR_RESULT_URL,
+    ATTR_DATE_LAST_TEST,
+    ATTR_IP,
+    ATTR_DOWNLOAD_LATENCY_IQM,
+    ATTR_DOWNLOAD_LATENCY_LOW,
+    ATTR_DOWNLOAD_LATENCY_HIGH,
+    ATTR_DOWNLOAD_LATENCY_JITTER,
+    ATTR_UPLOAD_LATENCY_IQM,
+    ATTR_UPLOAD_LATENCY_LOW,
+    ATTR_UPLOAD_LATENCY_HIGH,
+    ATTR_UPLOAD_LATENCY_JITTER,
 )
 from .coordinator import SpeedtestCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Latency sensor keys — disabled by default, user can enable
+_LATENCY_KEYS = {
+    ATTR_DOWNLOAD_LATENCY_IQM,
+    ATTR_DOWNLOAD_LATENCY_LOW,
+    ATTR_DOWNLOAD_LATENCY_HIGH,
+    ATTR_DOWNLOAD_LATENCY_JITTER,
+    ATTR_UPLOAD_LATENCY_IQM,
+    ATTR_UPLOAD_LATENCY_LOW,
+    ATTR_UPLOAD_LATENCY_HIGH,
+    ATTR_UPLOAD_LATENCY_JITTER,
+}
 
 SENSORS = (
     SensorEntityDescription(
@@ -37,6 +60,7 @@ SENSORS = (
         native_unit_of_measurement="Mbit/s",
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:download",
     ),
     SensorEntityDescription(
         key=ATTR_UPLOAD,
@@ -44,6 +68,7 @@ SENSORS = (
         native_unit_of_measurement="Mbit/s",
         device_class=SensorDeviceClass.DATA_RATE,
         state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:upload",
     ),
     SensorEntityDescription(
         key=ATTR_PING,
@@ -51,6 +76,7 @@ SENSORS = (
         native_unit_of_measurement="ms",
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
     ),
     SensorEntityDescription(
         key=ATTR_JITTER,
@@ -58,16 +84,106 @@ SENSORS = (
         native_unit_of_measurement="ms",
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:pulse",
     ),
     SensorEntityDescription(
         key=ATTR_ISP,
         name="ISP",
-        icon="mdi:server-network",
+        icon="mdi:web",
     ),
     SensorEntityDescription(
         key=ATTR_SERVER,
         name="Server",
         icon="mdi:server",
+    ),
+    SensorEntityDescription(
+        key=ATTR_IP,
+        name="IP",
+        icon="mdi:ip-network",
+    ),
+    SensorEntityDescription(
+        key=ATTR_RESULT_URL,
+        name="Result URL",
+        icon="mdi:link",
+    ),
+    SensorEntityDescription(
+        key=ATTR_DATE_LAST_TEST,
+        name="Last Test",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        icon="mdi:clock",
+    ),
+    # Latency detail sensors (disabled by default)
+    SensorEntityDescription(
+        key=ATTR_DOWNLOAD_LATENCY_IQM,
+        name="Download Ping",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_DOWNLOAD_LATENCY_LOW,
+        name="Download Ping Min",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_DOWNLOAD_LATENCY_HIGH,
+        name="Download Ping Max",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_DOWNLOAD_LATENCY_JITTER,
+        name="Download Jitter",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:pulse",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_UPLOAD_LATENCY_IQM,
+        name="Upload Ping",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_UPLOAD_LATENCY_LOW,
+        name="Upload Ping Min",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_UPLOAD_LATENCY_HIGH,
+        name="Upload Ping Max",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
+    ),
+    SensorEntityDescription(
+        key=ATTR_UPLOAD_LATENCY_JITTER,
+        name="Upload Jitter",
+        native_unit_of_measurement="ms",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:pulse",
+        entity_registry_enabled_default=False,
     ),
 )
 
@@ -119,23 +235,18 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestCoordinator], SensorEntity):
 
         raw_value = self.coordinator.data.get(self.entity_description.key)
         if raw_value is None or raw_value == "unknown":
-            if self.entity_description.native_unit_of_measurement:
-                return None
-            return "unknown"
+            return None
 
-        try:
-            parsed = float(raw_value)
-            return round(parsed, 2) if "." in str(raw_value) else int(parsed)
-        except ValueError:
+        # Timestamp sensor returns ISO string directly
+        if self.entity_description.device_class == SensorDeviceClass.TIMESTAMP:
             return raw_value
 
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return extra state attributes."""
-        if self.coordinator.data is None:
-            return {}
-        return {
-            key: self.coordinator.data.get(key, "unknown")
-            for key in self.coordinator.data
-            if key != self.entity_description.key
-        }
+        # Numeric sensors
+        if self.entity_description.native_unit_of_measurement:
+            try:
+                parsed = float(raw_value)
+                return round(parsed, 2) if "." in str(raw_value) else int(parsed)
+            except ValueError:
+                return None
+
+        return raw_value

@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+from datetime import datetime, timezone
 from datetime import timedelta
 from typing import Any
 
@@ -27,6 +28,17 @@ from .const import (
     ATTR_JITTER,
     ATTR_ISP,
     ATTR_SERVER,
+    ATTR_RESULT_URL,
+    ATTR_DATE_LAST_TEST,
+    ATTR_IP,
+    ATTR_DOWNLOAD_LATENCY_IQM,
+    ATTR_DOWNLOAD_LATENCY_LOW,
+    ATTR_DOWNLOAD_LATENCY_HIGH,
+    ATTR_DOWNLOAD_LATENCY_JITTER,
+    ATTR_UPLOAD_LATENCY_IQM,
+    ATTR_UPLOAD_LATENCY_LOW,
+    ATTR_UPLOAD_LATENCY_HIGH,
+    ATTR_UPLOAD_LATENCY_JITTER,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -95,6 +107,7 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             # Parse with regex (English labels from QMS binary)
             data = self._parse_output(output)
+            data[ATTR_DATE_LAST_TEST] = datetime.now(timezone.utc).isoformat()
             return data
 
         except UpdateFailed:
@@ -112,16 +125,38 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ATTR_JITTER: "unknown",
             ATTR_ISP: "unknown",
             ATTR_SERVER: "unknown",
+            ATTR_RESULT_URL: "unknown",
+            ATTR_IP: "unknown",
+            ATTR_DOWNLOAD_LATENCY_IQM: "unknown",
+            ATTR_DOWNLOAD_LATENCY_LOW: "unknown",
+            ATTR_DOWNLOAD_LATENCY_HIGH: "unknown",
+            ATTR_DOWNLOAD_LATENCY_JITTER: "unknown",
+            ATTR_UPLOAD_LATENCY_IQM: "unknown",
+            ATTR_UPLOAD_LATENCY_LOW: "unknown",
+            ATTR_UPLOAD_LATENCY_HIGH: "unknown",
+            ATTR_UPLOAD_LATENCY_JITTER: "unknown",
         }
 
-        # Regex patterns for English QMS output (case-insensitive, multi-line)
+        # Regex patterns matching actual QMS binary output format
         patterns = {
-            ATTR_PING: r"Idle Latency:\s*(\d+(?:\.\d+)?)\s*ms",
-            ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)\s*ms",
+            ATTR_PING: r"Ping:\s*(\d+(?:\.\d+)?)",
+            ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)",
             ATTR_DOWNLOAD: r"Download:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
             ATTR_UPLOAD: r"Upload:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
             ATTR_ISP: r"ISP:\s*([^\n]+)",
             ATTR_SERVER: r"Server:\s*([^\n]+)",
+            ATTR_IP: r"IP:\s*([\d\.]+)",
+            ATTR_RESULT_URL: r"Result:\s*(https?://\S+)",
+            # Download latency stats from "Ping download: count: N, min X, max Y, mean Z, median M, iqr I, iqm Q"
+            ATTR_DOWNLOAD_LATENCY_IQM: r"Ping download:.*?\biqm\s+(\d+(?:\.\d+)?)",
+            ATTR_DOWNLOAD_LATENCY_LOW: r"Ping download:.*?\bmin\s+(\d+(?:\.\d+)?)",
+            ATTR_DOWNLOAD_LATENCY_HIGH: r"Ping download:.*?\bmax\s+(\d+(?:\.\d+)?)",
+            ATTR_DOWNLOAD_LATENCY_JITTER: r"Ping download:.*?\biqr\s+(\d+(?:\.\d+)?)",
+            # Upload latency stats from "Ping upload: count: N, min X, max Y, mean Z, median M, iqr I, iqm Q"
+            ATTR_UPLOAD_LATENCY_IQM: r"Ping upload:.*?\biqm\s+(\d+(?:\.\d+)?)",
+            ATTR_UPLOAD_LATENCY_LOW: r"Ping upload:.*?\bmin\s+(\d+(?:\.\d+)?)",
+            ATTR_UPLOAD_LATENCY_HIGH: r"Ping upload:.*?\bmax\s+(\d+(?:\.\d+)?)",
+            ATTR_UPLOAD_LATENCY_JITTER: r"Ping upload:.*?\biqr\s+(\d+(?:\.\d+)?)",
         }
 
         for attr, pattern in patterns.items():

@@ -22,7 +22,11 @@ It provides six sensors and a button entity:
 - **Jitter** – network jitter in milliseconds
 - **ISP** – your Internet Service Provider name
 - **Server** – the speedtest server used
+- **IP** – your public IP address
+- **Result URL** – link to the full test result on qms.ru
+- **Last Test** – timestamp of the last completed test
 - **Run Speedtest** (button) – manually trigger a speed test
+- 8 additional latency detail sensors (disabled by default)
 
 All entities are grouped under a single **Speedtest RT.RU** device for easy management.
 
@@ -105,7 +109,18 @@ After setup, six sensors and one button are grouped under a "Speedtest RT.RU" de
 - `sensor.speedtest_rt_ru_jitter`
 - `sensor.speedtest_rt_ru_isp`
 - `sensor.speedtest_rt_ru_server`
+- `sensor.speedtest_rt_ru_ip`
+- `sensor.speedtest_rt_ru_result_url`
+- `sensor.speedtest_rt_ru_last_test`
 - `button.speedtest_rt_ru_run_speedtest`
+
+Additional latency sensors (disabled by default, enable in entity settings):
+- `sensor.speedtest_rt_ru_ping_during_download` — download ping IQM
+- `sensor.speedtest_rt_ru_ping_low_during_download` / `ping_high_during_download`
+- `sensor.speedtest_rt_ru_jitter_during_download`
+- `sensor.speedtest_rt_ru_ping_during_upload` — upload ping IQM
+- `sensor.speedtest_rt_ru_ping_low_during_upload` / `ping_high_during_upload`
+- `sensor.speedtest_rt_ru_jitter_during_upload`
 
 Use them in automations, Lovelace dashboards, or for monitoring your internet connection.
 
@@ -186,14 +201,18 @@ Thank you for being part of the Home Assistant community.
 
 ![Logo](icon.png)
 
-Интеграция предоставляет шесть сенсоров и кнопку:
+Интеграция предоставляет сенсоры и кнопку:
 - **Скорость загрузки** – в Мбит/с
 - **Скорость отдачи** – в Мбит/с
 - **Ping** – задержка сети в миллисекундах
 - **Jitter** – джиттер сети в миллисекундах
 - **ISP** – название вашего интернет-провайдера
 - **Server** – используемый сервер Speedtest
+- **IP** – ваш публичный IP-адрес
+- **Result URL** – ссылка на полный результат теста на qms.ru
+- **Last Test** – время последнего завершённого теста
 - **Run Speedtest** (кнопка) – ручной запуск теста скорости
+- 8 дополнительных сенсоров задержки (отключены по умолчанию)
 
 Все сущности объединены в одно устройство **Speedtest RT.RU** для удобного управления.
 
@@ -269,14 +288,25 @@ entities:
 
 ### Использование
 
-После установки будут доступны шесть сенсоров и одна кнопка, объединённые в устройство "Speedtest RT.RU":
+После установки будут доступны следующие сенсоры и одна кнопка, объединённые в устройство "Speedtest RT.RU":
 - `sensor.speedtest_rt_ru_download`
 - `sensor.speedtest_rt_ru_upload`
 - `sensor.speedtest_rt_ru_ping`
 - `sensor.speedtest_rt_ru_jitter`
 - `sensor.speedtest_rt_ru_isp`
 - `sensor.speedtest_rt_ru_server`
+- `sensor.speedtest_rt_ru_ip`
+- `sensor.speedtest_rt_ru_result_url`
+- `sensor.speedtest_rt_ru_last_test`
 - `button.speedtest_rt_ru_run_speedtest`
+
+Дополнительные сенсоры задержки (отключены по умолчанию, включить в настройках объектов):
+- `sensor.speedtest_rt_ru_ping_during_download` — пинг IQM во время загрузки
+- `sensor.speedtest_rt_ru_ping_low_during_download` / `ping_high_during_download`
+- `sensor.speedtest_rt_ru_jitter_during_download`
+- `sensor.speedtest_rt_ru_ping_during_upload` — пинг IQM во время отдачи
+- `sensor.speedtest_rt_ru_ping_low_during_upload` / `ping_high_during_upload`
+- `sensor.speedtest_rt_ru_jitter_during_upload`
 
 Используйте их в автоматизациях, Lovelace-дэшбордах и для мониторинга соединения.
 
