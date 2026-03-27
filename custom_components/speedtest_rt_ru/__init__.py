@@ -58,13 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "last_test": None,
         "ip": None,
         "ping_during_download": None,
-        "ping_low_during_download": None,
-        "ping_high_during_download": None,
-        "jitter_during_download": None,
         "ping_during_upload": None,
-        "ping_low_during_upload": None,
-        "ping_high_during_upload": None,
-        "jitter_during_upload": None,
     })
 
     hass.data.setdefault(DOMAIN, {})

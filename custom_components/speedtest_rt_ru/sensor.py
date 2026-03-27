@@ -29,13 +29,7 @@ from .const import (
     ATTR_DATE_LAST_TEST,
     ATTR_IP,
     ATTR_DOWNLOAD_LATENCY_IQM,
-    ATTR_DOWNLOAD_LATENCY_LOW,
-    ATTR_DOWNLOAD_LATENCY_HIGH,
-    ATTR_DOWNLOAD_LATENCY_JITTER,
     ATTR_UPLOAD_LATENCY_IQM,
-    ATTR_UPLOAD_LATENCY_LOW,
-    ATTR_UPLOAD_LATENCY_HIGH,
-    ATTR_UPLOAD_LATENCY_JITTER,
 )
 from .coordinator import SpeedtestCoordinator
 
@@ -44,13 +38,7 @@ _LOGGER = logging.getLogger(__name__)
 # Latency sensor keys — disabled by default, user can enable
 _LATENCY_KEYS = {
     ATTR_DOWNLOAD_LATENCY_IQM,
-    ATTR_DOWNLOAD_LATENCY_LOW,
-    ATTR_DOWNLOAD_LATENCY_HIGH,
-    ATTR_DOWNLOAD_LATENCY_JITTER,
     ATTR_UPLOAD_LATENCY_IQM,
-    ATTR_UPLOAD_LATENCY_LOW,
-    ATTR_UPLOAD_LATENCY_HIGH,
-    ATTR_UPLOAD_LATENCY_JITTER,
 }
 
 SENSORS = (
@@ -112,7 +100,7 @@ SENSORS = (
         device_class=SensorDeviceClass.TIMESTAMP,
         icon="mdi:clock",
     ),
-    # Latency detail sensors (disabled by default)
+    # Latency sensors (disabled by default)
     SensorEntityDescription(
         key=ATTR_DOWNLOAD_LATENCY_IQM,
         name="Download Ping",
@@ -123,66 +111,12 @@ SENSORS = (
         entity_registry_enabled_default=False,
     ),
     SensorEntityDescription(
-        key=ATTR_DOWNLOAD_LATENCY_LOW,
-        name="Download Ping Min",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:speedometer",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
-        key=ATTR_DOWNLOAD_LATENCY_HIGH,
-        name="Download Ping Max",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:speedometer",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
-        key=ATTR_DOWNLOAD_LATENCY_JITTER,
-        name="Download Jitter",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:pulse",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
         key=ATTR_UPLOAD_LATENCY_IQM,
         name="Upload Ping",
         native_unit_of_measurement="ms",
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:speedometer",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
-        key=ATTR_UPLOAD_LATENCY_LOW,
-        name="Upload Ping Min",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:speedometer",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
-        key=ATTR_UPLOAD_LATENCY_HIGH,
-        name="Upload Ping Max",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:speedometer",
-        entity_registry_enabled_default=False,
-    ),
-    SensorEntityDescription(
-        key=ATTR_UPLOAD_LATENCY_JITTER,
-        name="Upload Jitter",
-        native_unit_of_measurement="ms",
-        device_class=SensorDeviceClass.DURATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:pulse",
         entity_registry_enabled_default=False,
     ),
 )

@@ -128,35 +128,21 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ATTR_RESULT_URL: "unknown",
             ATTR_IP: "unknown",
             ATTR_DOWNLOAD_LATENCY_IQM: "unknown",
-            ATTR_DOWNLOAD_LATENCY_LOW: "unknown",
-            ATTR_DOWNLOAD_LATENCY_HIGH: "unknown",
-            ATTR_DOWNLOAD_LATENCY_JITTER: "unknown",
             ATTR_UPLOAD_LATENCY_IQM: "unknown",
-            ATTR_UPLOAD_LATENCY_LOW: "unknown",
-            ATTR_UPLOAD_LATENCY_HIGH: "unknown",
-            ATTR_UPLOAD_LATENCY_JITTER: "unknown",
         }
 
         # Regex patterns matching actual QMS binary output format
         patterns = {
-            ATTR_PING: r"^Ping:\s*(\d+(?:\.\d+)?)",
-            ATTR_JITTER: r"Jitter:\s*(\d+(?:\.\d+)?)",
+            ATTR_PING: r"Idle Latency:\s*(\d+(?:\.\d+)?)\s*ms",
+            ATTR_JITTER: r"Idle Latency:.*?Jitter:\s*(\d+(?:\.\d+)?)\s*ms",
             ATTR_DOWNLOAD: r"Download:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
             ATTR_UPLOAD: r"Upload:\s*(\d+(?:\.\d+)?)\s*Mbit/s",
             ATTR_ISP: r"ISP:\s*([^\n]+)",
             ATTR_SERVER: r"Server:\s*([^\n]+)",
             ATTR_IP: r"IP:\s*([\d\.]+)",
             ATTR_RESULT_URL: r"Result:\s*(https?://\S+)",
-            # Download latency stats from "Ping download: count: N, min X, max Y, mean Z, median M, iqr I, iqm Q"
-            ATTR_DOWNLOAD_LATENCY_IQM: r"Ping download:.*?\biqm\s+(\d+(?:\.\d+)?)",
-            ATTR_DOWNLOAD_LATENCY_LOW: r"Ping download:.*?\bmin\s+(\d+(?:\.\d+)?)",
-            ATTR_DOWNLOAD_LATENCY_HIGH: r"Ping download:.*?\bmax\s+(\d+(?:\.\d+)?)",
-            ATTR_DOWNLOAD_LATENCY_JITTER: r"Ping download:.*?\biqr\s+(\d+(?:\.\d+)?)",
-            # Upload latency stats from "Ping upload: count: N, min X, max Y, mean Z, median M, iqr I, iqm Q"
-            ATTR_UPLOAD_LATENCY_IQM: r"Ping upload:.*?\biqm\s+(\d+(?:\.\d+)?)",
-            ATTR_UPLOAD_LATENCY_LOW: r"Ping upload:.*?\bmin\s+(\d+(?:\.\d+)?)",
-            ATTR_UPLOAD_LATENCY_HIGH: r"Ping upload:.*?\bmax\s+(\d+(?:\.\d+)?)",
-            ATTR_UPLOAD_LATENCY_JITTER: r"Ping upload:.*?\biqr\s+(\d+(?:\.\d+)?)",
+            ATTR_DOWNLOAD_LATENCY_IQM: r"Download:.*?Latency:\s*(\d+(?:\.\d+)?)\s*ms",
+            ATTR_UPLOAD_LATENCY_IQM: r"Upload:.*?Latency:\s*(\d+(?:\.\d+)?)\s*ms",
         }
 
         for attr, pattern in patterns.items():
