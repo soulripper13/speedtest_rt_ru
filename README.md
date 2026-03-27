@@ -15,10 +15,10 @@
 
 ![Logo](icon.png)
 
-It provides six sensors and a button entity:
+It provides the following sensors and a button entity:
 - **Download** – download speed in Mbps
 - **Upload** – upload speed in Mbps
-- **Ping** – network latency in milliseconds
+- **Ping** – idle network latency in milliseconds
 - **Jitter** – network jitter in milliseconds
 - **ISP** – your Internet Service Provider name
 - **Server** – the speedtest server used
@@ -26,7 +26,7 @@ It provides six sensors and a button entity:
 - **Result URL** – link to the full test result on qms.ru
 - **Last Test** – timestamp of the last completed test
 - **Run Speedtest** (button) – manually trigger a speed test
-- 8 additional latency detail sensors (disabled by default)
+- 2 additional latency sensors: Download Ping and Upload Ping (disabled by default)
 
 All entities are grouped under a single **Speedtest RT.RU** device for easy management.
 
@@ -68,7 +68,7 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 Two custom cards are automatically installed and registered when the integration is set up, and removed when the integration is deleted.
 
 #### Main Card (`custom:speedtest-rt-ru-card`)
-Full-featured card with dual radial gauges for download and upload, plus ping and jitter metrics, ISP name, and server info.
+Full-featured card with dual radial gauges for download and upload, plus ping and jitter metrics, ISP name, server info, IP address, result link, and last test time.
 
 ```yaml
 type: custom:speedtest-rt-ru-card
@@ -80,6 +80,9 @@ entities:
   jitter: sensor.speedtest_rt_ru_jitter
   isp: sensor.speedtest_rt_ru_isp
   server: sensor.speedtest_rt_ru_server
+  result_url: sensor.speedtest_rt_ru_result_url
+  last_test: sensor.speedtest_rt_ru_last_test
+  ip: sensor.speedtest_rt_ru_ip
 max_download: 1000
 max_upload: 500
 ```
@@ -102,7 +105,7 @@ Both cards have a visual editor accessible from the Lovelace card picker.
 
 ### Usage
 
-After setup, six sensors and one button are grouped under a "Speedtest RT.RU" device:
+After setup, the following sensors and one button are grouped under a "Speedtest RT.RU" device:
 - `sensor.speedtest_rt_ru_download`
 - `sensor.speedtest_rt_ru_upload`
 - `sensor.speedtest_rt_ru_ping`
@@ -115,12 +118,8 @@ After setup, six sensors and one button are grouped under a "Speedtest RT.RU" de
 - `button.speedtest_rt_ru_run_speedtest`
 
 Additional latency sensors (disabled by default, enable in entity settings):
-- `sensor.speedtest_rt_ru_ping_during_download` — download ping IQM
-- `sensor.speedtest_rt_ru_ping_low_during_download` / `ping_high_during_download`
-- `sensor.speedtest_rt_ru_jitter_during_download`
-- `sensor.speedtest_rt_ru_ping_during_upload` — upload ping IQM
-- `sensor.speedtest_rt_ru_ping_low_during_upload` / `ping_high_during_upload`
-- `sensor.speedtest_rt_ru_jitter_during_upload`
+- `sensor.speedtest_rt_ru_ping_during_download` — latency measured during the download phase
+- `sensor.speedtest_rt_ru_ping_during_upload` — latency measured during the upload phase
 
 Use them in automations, Lovelace dashboards, or for monitoring your internet connection.
 
@@ -204,7 +203,7 @@ Thank you for being part of the Home Assistant community.
 Интеграция предоставляет сенсоры и кнопку:
 - **Скорость загрузки** – в Мбит/с
 - **Скорость отдачи** – в Мбит/с
-- **Ping** – задержка сети в миллисекундах
+- **Ping** – задержка сети в миллисекундах (в режиме ожидания)
 - **Jitter** – джиттер сети в миллисекундах
 - **ISP** – название вашего интернет-провайдера
 - **Server** – используемый сервер Speedtest
@@ -212,7 +211,7 @@ Thank you for being part of the Home Assistant community.
 - **Result URL** – ссылка на полный результат теста на qms.ru
 - **Last Test** – время последнего завершённого теста
 - **Run Speedtest** (кнопка) – ручной запуск теста скорости
-- 8 дополнительных сенсоров задержки (отключены по умолчанию)
+- 2 дополнительных сенсора задержки: пинг при загрузке и при отдаче (отключены по умолчанию)
 
 Все сущности объединены в одно устройство **Speedtest RT.RU** для удобного управления.
 
