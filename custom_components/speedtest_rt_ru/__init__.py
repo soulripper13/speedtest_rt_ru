@@ -48,12 +48,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set initial data to avoid blocking setup with a speedtest
     coordinator.async_set_updated_data({
-        "download": None,
-        "upload": None,
-        "ping": None,
-        "jitter": None,
-        "isp": None,
-        "server": None,
+        "download": 0,
+        "upload": 0,
+        "ping": 0,
+        "jitter": 0,
+        "isp": "—",
+        "server": "—",
         "result_url": None,
         "last_test": None,
         "ip": None,

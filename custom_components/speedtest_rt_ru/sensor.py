@@ -237,8 +237,14 @@ class SpeedtestSensor(CoordinatorEntity[SpeedtestCoordinator], SensorEntity):
         if raw_value is None or raw_value == "unknown":
             return None
 
-        # Timestamp sensor returns ISO string directly
+        # Timestamp sensor — coordinator already stores a datetime object
         if self.entity_description.device_class == SensorDeviceClass.TIMESTAMP:
+            if isinstance(raw_value, str):
+                from datetime import datetime, timezone
+                try:
+                    return datetime.fromisoformat(raw_value)
+                except ValueError:
+                    return None
             return raw_value
 
         # Numeric sensors
