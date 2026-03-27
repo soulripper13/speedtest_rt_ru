@@ -253,7 +253,7 @@ Thank you for being part of the Home Assistant community.
 Две карточки автоматически устанавливаются и регистрируются при настройке интеграции, а при её удалении — удаляются.
 
 #### Основная карточка (`custom:speedtest-rt-ru-card`)
-Полнофункциональная карточка с двумя радиальными датчиками для загрузки и отдачи, показателями пинга и джиттера, именем провайдера и сервера.
+Полнофункциональная карточка с двумя радиальными датчиками для загрузки и отдачи, показателями пинга и джиттера, именем провайдера, информацией о сервере, IP-адресом, ссылкой на результат и временем последнего теста.
 
 ```yaml
 type: custom:speedtest-rt-ru-card
@@ -265,6 +265,9 @@ entities:
   jitter: sensor.speedtest_rt_ru_jitter
   isp: sensor.speedtest_rt_ru_isp
   server: sensor.speedtest_rt_ru_server
+  result_url: sensor.speedtest_rt_ru_result_url
+  last_test: sensor.speedtest_rt_ru_last_test
+  ip: sensor.speedtest_rt_ru_ip
 max_download: 1000
 max_upload: 500
 ```
