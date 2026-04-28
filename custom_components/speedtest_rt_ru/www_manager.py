@@ -7,7 +7,7 @@ import stat
 from pathlib import Path
 
 from homeassistant.components.lovelace import DOMAIN as LOVELACE_DOMAIN
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_call_later
 
 from .const import DOMAIN
@@ -109,7 +109,13 @@ async def async_register_cards(hass: HomeAssistant) -> None:
 
     if not getattr(lovelace, "resources", None) or not lovelace.resources.loaded:
         _LOGGER.debug("Lovelace resources not loaded, retrying in 5 seconds")
-        async_call_later(hass, 5, lambda _: hass.async_create_task(async_register_cards(hass)))
+
+        @callback
+        def _schedule_register_cards_retry(_now) -> None:
+            """Schedule Lovelace resource registration retry from the event loop."""
+            hass.async_create_task(async_register_cards(hass))
+
+        async_call_later(hass, 5, _schedule_register_cards_retry)
         return
 
     resources = lovelace.resources
