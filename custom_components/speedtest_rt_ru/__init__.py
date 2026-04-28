@@ -77,10 +77,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await async_setup_cards(hass)
     hass.async_create_task(async_register_cards(hass))
 
+    @callback
+    def _schedule_binary_update_check(_now) -> None:
+        """Schedule a binary update check from the event loop."""
+        hass.async_create_task(_check_binary_update(hass, entry))
+
     # Schedule periodic binary update checks
     cancel_updater = async_track_time_interval(
         hass,
-        lambda now: hass.async_create_task(_check_binary_update(hass, entry)),
+        _schedule_binary_update_check,
         timedelta(hours=BINARY_UPDATE_INTERVAL_HOURS),
     )
     hass.data[DOMAIN][entry.entry_id]["cancel_updater"] = cancel_updater
