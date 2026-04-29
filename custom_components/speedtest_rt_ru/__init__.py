@@ -158,8 +158,15 @@ def _get_binary_url() -> tuple[str, str]:
     return BINARY_URL_X86, STORAGE_KEY_ETAG_X86
 
 
-async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Check if a newer binary is available via HEAD request and update if so."""
+async def _check_and_update_binary(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> tuple[bool, str | None]:
+    """Check for a newer binary and download it if available.
+
+    Returns (was_updated, last_modified_str).
+    was_updated=True means a new binary was downloaded and applied.
+    last_modified_str is the Last-Modified header value, or None if unavailable.
+    """
     binary_url, etag_key = _get_binary_url()
     session = async_get_clientsession(hass)
 
@@ -167,18 +174,18 @@ async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
         async with session.head(binary_url, allow_redirects=True) as resp:
             if resp.status != 200:
                 _LOGGER.debug("Binary update check returned status %s", resp.status)
-                return
+                return False, None
 
             remote_etag = resp.headers.get("ETag") or resp.headers.get("Last-Modified")
+            last_modified = resp.headers.get("Last-Modified")
             if not remote_etag:
                 _LOGGER.debug("No ETag/Last-Modified header, skipping update check")
-                return
+                return False, None
 
-        # Compare with stored ETag
         stored_etag = hass.data[DOMAIN].get(etag_key)
         if stored_etag and stored_etag == remote_etag:
             _LOGGER.debug("Binary is up to date (ETag: %s)", remote_etag)
-            return
+            return False, last_modified
 
         _LOGGER.info(
             "New binary version detected (ETag: %s -> %s), downloading update",
@@ -189,12 +196,10 @@ async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
         new_binary_path = await _download_binary(hass, entry, force=True)
         if not new_binary_path:
             _LOGGER.error("Binary update download failed")
-            return
+            return False, last_modified
 
-        # Store new ETag
         hass.data[DOMAIN][etag_key] = remote_etag
 
-        # Update binary path in all active entry data and coordinators
         for entry_id, data in hass.data[DOMAIN].items():
             if not isinstance(data, dict):
                 continue
@@ -204,9 +209,19 @@ async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
                 data["binary_path"] = new_binary_path
 
         _LOGGER.info("Binary updated successfully to %s", new_binary_path)
+        return True, last_modified
 
     except Exception as err:
         _LOGGER.error("Error during binary update check: %s", err)
+        return False, None
+
+
+async def _check_binary_update(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Periodic 24h check — delegates to _check_and_update_binary."""
+    try:
+        await _check_and_update_binary(hass, entry)
+    except Exception as err:
+        _LOGGER.error("Error during scheduled binary update check: %s", err)
 
 
 async def get_available_servers(binary_path: str) -> dict[str, str]:
