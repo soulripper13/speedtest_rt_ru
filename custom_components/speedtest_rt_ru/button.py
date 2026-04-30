@@ -5,6 +5,9 @@ import logging
 from email.utils import parsedate_to_datetime
 
 from homeassistant.components.button import ButtonEntity
+from homeassistant.components.persistent_notification import (
+    async_create as async_create_notification,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -13,7 +16,13 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import SpeedtestCoordinator
-from . import _check_and_update_binary
+from . import (
+    UPDATE_STATUS_CURRENT,
+    UPDATE_STATUS_FAILED,
+    UPDATE_STATUS_UNKNOWN,
+    UPDATE_STATUS_UPDATED,
+    _check_and_update_binary,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -97,25 +106,31 @@ class CheckUpdateButton(CoordinatorEntity[SpeedtestCoordinator], ButtonEntity):
         _LOGGER.info("Manual binary update check triggered")
 
         try:
-            was_updated, last_modified = await _check_and_update_binary(
-                self.hass, self._entry
-            )
+            result = await _check_and_update_binary(self.hass, self._entry)
         except Exception as err:
             _LOGGER.error("Update check failed: %s", err)
-            self.hass.components.persistent_notification.async_create(
+            async_create_notification(
+                self.hass,
                 "Update check failed. See logs for details.",
                 title="Speedtest RT.RU",
                 notification_id="speedtest_rt_ru_update",
             )
             return
 
-        if was_updated:
-            date_str = _format_last_modified(last_modified)
-            message = f"New update available — last modified: {date_str}"
-        else:
+        if result.status == UPDATE_STATUS_UPDATED:
+            date_str = _format_last_modified(result.last_modified)
+            message = f"Binary updated successfully. Last modified: {date_str}"
+        elif result.status == UPDATE_STATUS_CURRENT:
             message = "No new update available"
+        elif result.status == UPDATE_STATUS_UNKNOWN:
+            message = result.message or "Update check could not determine the remote version"
+        elif result.status == UPDATE_STATUS_FAILED:
+            message = result.message or "Update check failed. See logs for details."
+        else:
+            message = "Update check returned an unexpected result. See logs for details."
 
-        self.hass.components.persistent_notification.async_create(
+        async_create_notification(
+            self.hass,
             message,
             title="Speedtest RT.RU",
             notification_id="speedtest_rt_ru_update",
