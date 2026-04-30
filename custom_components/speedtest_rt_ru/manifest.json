@@ -4,7 +4,7 @@
   "after_dependencies": ["lovelace"],
   "codeowners": ["@soulripper13"],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": ["persistent_notification"],
   "documentation": "https://github.com/soulripper13/speedtest_rt_ru",
   "integration_type": "service",
   "iot_class": "local_polling",
