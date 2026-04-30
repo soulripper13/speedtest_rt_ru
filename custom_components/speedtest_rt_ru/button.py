@@ -82,7 +82,7 @@ class CheckUpdateButton(CoordinatorEntity[SpeedtestCoordinator], ButtonEntity):
     """Button to check for and apply qms_lib binary updates."""
 
     _attr_has_entity_name = True
-    _attr_name = "Check for Update"
+    _attr_name = "Check and Install Update"
     _attr_icon = "mdi:update"
 
     def __init__(self, coordinator: SpeedtestCoordinator, entry: ConfigEntry) -> None:
