@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import platform
 from pathlib import Path
 from typing import Any
 
@@ -29,9 +30,35 @@ from .const import (
     DEFAULT_TEST_TIMEOUT,
     BINARY_DIR,
     BINARY_NAME,
+    BINARY_BUNDLED_DIR,
+    BINARY_PLATFORM_X86,
+    BINARY_PLATFORM_ARM64,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _get_binary_platform() -> str:
+    """Return the bundled binary platform directory for the current architecture."""
+    machine = platform.machine()
+    if machine in ("aarch64", "arm64"):
+        return BINARY_PLATFORM_ARM64
+    return BINARY_PLATFORM_X86
+
+
+def _get_options_binary_path(hass) -> Path:
+    """Return the best available binary path for options server discovery."""
+    integration_dir = Path(hass.config.path(BINARY_DIR))
+    bundled_path = (
+        integration_dir
+        / BINARY_BUNDLED_DIR
+        / _get_binary_platform()
+        / BINARY_NAME
+    )
+    if bundled_path.exists():
+        return bundled_path
+
+    return integration_dir / BINARY_NAME
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -112,7 +139,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         # Get available servers
         from . import get_available_servers
 
-        binary_path = Path(self.hass.config.path(BINARY_DIR)) / BINARY_NAME
+        binary_path = _get_options_binary_path(self.hass)
         servers = {"auto": "Auto (Best Server)"}
 
         if binary_path.exists():
