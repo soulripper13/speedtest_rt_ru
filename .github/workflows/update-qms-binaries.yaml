@@ -84,5 +84,4 @@ jobs:
             Updates the bundled RT.RU QMS binaries used by the Home Assistant integration.
 
             The integration no longer checks for or installs binary updates at runtime; updates are handled in the repository by this workflow.
-          labels: dependencies
           delete-branch: true
