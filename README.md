@@ -31,8 +31,8 @@ It provides the following sensors and a button entity:
 All entities are grouped under a single **Speedtest RT.RU** device for easy management.
 
 ### Features
-- Automatic download of the QMS speedtest binary on setup
-- **Automatic binary updates** – checks for a new binary version every 24 hours via ETag comparison and updates in place without requiring a restart
+- Bundled QMS speedtest binary with setup-time download fallback for manual installs
+- **Bundled QMS binary updates** – repository workflow checks upstream QMS binaries and updates the packaged binaries by pull request
 - **Server selection** – choose from available Russian speedtest servers or use automatic selection
 - Configurable update interval through the Home Assistant UI or manual update
 - **Button entity** – trigger speedtest directly from the UI
@@ -143,8 +143,8 @@ The integration exposes the service `speedtest_rt_ru.perform_test`:
 2. Select `speedtest_rt_ru.perform_test`.
 3. Call the service (no parameters required).
 
-#### Binary Auto-Update
-The integration checks for a new QMS binary every **24 hours** by comparing the `ETag` header from `lib.qms.ru`. If a new version is found, it is downloaded and applied in place — no restart required. You will see a log message when an update is detected and applied.
+#### Binary Updates
+QMS binary updates are handled by a GitHub Actions workflow in this repository. The workflow checks the upstream RT.RU binaries, updates the packaged `qms_lib` files when they change, and opens a pull request.
 
 #### Disable Automatic Speedtest Updates
 1. Go to **Settings → Devices & Services**.
@@ -216,8 +216,8 @@ Thank you for being part of the Home Assistant community.
 Все сущности объединены в одно устройство **Speedtest RT.RU** для удобного управления.
 
 ### Возможности
-- Автоматическая загрузка бинарника QMS при установке
-- **Автоматическое обновление бинарника** – каждые 24 часа интеграция проверяет наличие новой версии по заголовку ETag и обновляет файл без перезапуска HA
+- Встроенный бинарник QMS с резервной загрузкой при установке вручную
+- **Обновление бинарника в репозитории** – GitHub Actions проверяет upstream-бинарники QMS и обновляет packaged-файлы через pull request
 - **Выбор сервера** – выбор из доступных серверов или автоматический подбор
 - Настраиваемый интервал обновления через UI Home Assistant
 - **Кнопка запуска** – запуск теста прямо из интерфейса
@@ -328,8 +328,8 @@ entities:
 2. Выберите `speedtest_rt_ru.perform_test`.
 3. Вызовите сервис (параметры не требуются).
 
-#### Автоматическое обновление бинарника
-Каждые **24 часа** интеграция выполняет HEAD-запрос к `lib.qms.ru` и сравнивает заголовок `ETag`. Если обнаружена новая версия — бинарник загружается и заменяется без перезапуска Home Assistant. Информация об обновлении появится в логах.
+#### Обновление бинарника
+Обновления бинарника QMS выполняются через GitHub Actions в этом репозитории. Workflow проверяет upstream-бинарники RT.RU, обновляет packaged-файлы `qms_lib` при изменениях и открывает pull request.
 
 #### Отключение автоматических тестов скорости
 1. Перейдите в **Настройки → Устройства и Сервисы**.
