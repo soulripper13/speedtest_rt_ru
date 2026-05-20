@@ -6,11 +6,13 @@ DOMAIN = "speedtest_rt_ru"
 CONF_SCAN_INTERVAL = "scan_interval"
 CONF_AUTO_UPDATE = "auto_update"
 CONF_SERVER_ID = "server_id"
+CONF_TEST_TIMEOUT = "test_timeout"
 
 # Defaults
 DEFAULT_SCAN_INTERVAL = 1800  # 30 minutes in seconds
 DEFAULT_AUTO_UPDATE = True
 DEFAULT_SERVER_ID = "auto"  # Auto-select server
+DEFAULT_TEST_TIMEOUT = 300  # 5 minutes in seconds
 
 # Sensor attributes
 ATTR_DOWNLOAD = "download"
@@ -36,8 +38,6 @@ BINARY_NAME = "qms_lib"
 BINARY_URL_X86 = "https://lib.qms.ru/bin/linux/qms_lib.zip"
 BINARY_URL_ARM64 = "https://lib.qms.ru/bin/linux_arm64/qms_lib.zip"
 BINARY_DIR = "custom_components/speedtest_rt_ru"
-
-# Binary auto-update
-BINARY_UPDATE_INTERVAL_HOURS = 24  # Check for binary updates every 24 hours
-STORAGE_KEY_ETAG_X86 = "binary_etag_x86"
-STORAGE_KEY_ETAG_ARM64 = "binary_etag_arm64"
+BINARY_BUNDLED_DIR = "bin"
+BINARY_PLATFORM_X86 = "linux"
+BINARY_PLATFORM_ARM64 = "linux_arm64"
