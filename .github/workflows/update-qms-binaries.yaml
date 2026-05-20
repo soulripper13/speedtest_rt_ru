@@ -1,0 +1,88 @@
+name: Update QMS binaries
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download QMS binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          import hashlib
+          import os
+          import stat
+          import urllib.request
+          import zipfile
+          from pathlib import Path
+
+          binaries = {
+              "linux": "https://lib.qms.ru/bin/linux/qms_lib.zip",
+              "linux_arm64": "https://lib.qms.ru/bin/linux_arm64/qms_lib.zip",
+          }
+
+          root = Path("custom_components/speedtest_rt_ru/bin")
+          checksums = []
+
+          for platform, url in binaries.items():
+              archive_path = Path(f"/tmp/qms_lib_{platform}.zip")
+              target_dir = root / platform
+              target_path = target_dir / "qms_lib"
+
+              target_dir.mkdir(parents=True, exist_ok=True)
+              urllib.request.urlretrieve(url, archive_path)
+
+              with zipfile.ZipFile(archive_path, "r") as archive:
+                  members = [
+                      member for member in archive.infolist()
+                      if not member.is_dir()
+                  ]
+                  selected = next(
+                      (
+                          member for member in members
+                          if Path(member.filename).name == "qms_lib"
+                      ),
+                      members[0] if len(members) == 1 else None,
+                  )
+                  if selected is None:
+                      raise FileNotFoundError(
+                          f"No qms_lib executable found in {url}"
+                      )
+
+                  with archive.open(selected) as source, target_path.open("wb") as target:
+                      target.write(source.read())
+
+              mode = target_path.stat().st_mode
+              target_path.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+              digest = hashlib.sha256(target_path.read_bytes()).hexdigest()
+              checksums.append(f"{digest}  {platform}/qms_lib")
+
+          (root / "SHA256SUMS").write_text("\n".join(checksums) + "\n")
+          PY
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update/qms-binaries
+          commit-message: "Update RT.RU QMS binaries"
+          title: "Update RT.RU QMS binaries"
+          body: |
+            Updates the bundled RT.RU QMS binaries used by the Home Assistant integration.
+
+            The integration no longer checks for or installs binary updates at runtime; updates are handled in the repository by this workflow.
+          labels: dependencies
+          delete-branch: true

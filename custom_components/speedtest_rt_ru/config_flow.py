@@ -22,9 +22,11 @@ from .const import (
     CONF_SCAN_INTERVAL,
     CONF_AUTO_UPDATE,
     CONF_SERVER_ID,
+    CONF_TEST_TIMEOUT,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_AUTO_UPDATE,
     DEFAULT_SERVER_ID,
+    DEFAULT_TEST_TIMEOUT,
     BINARY_DIR,
     BINARY_NAME,
 )
@@ -65,6 +67,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_AUTO_UPDATE, default=DEFAULT_AUTO_UPDATE
                     ): bool,
+                    vol.Optional(
+                        CONF_TEST_TIMEOUT,
+                        description={"suggested_value": DEFAULT_TEST_TIMEOUT},
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=60,
+                            max=900,
+                            unit_of_measurement="seconds",
+                        )
+                    ),
                 }
             ),
         )
@@ -91,6 +103,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         server_id = self.config_entry.options.get(
             CONF_SERVER_ID,
             self.config_entry.data.get(CONF_SERVER_ID, DEFAULT_SERVER_ID)
+        )
+        test_timeout = self.config_entry.options.get(
+            CONF_TEST_TIMEOUT,
+            self.config_entry.data.get(CONF_TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT)
         )
 
         # Get available servers
@@ -131,6 +147,16 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Optional(
                         CONF_AUTO_UPDATE, default=auto_update
                     ): bool,
+                    vol.Optional(
+                        CONF_TEST_TIMEOUT,
+                        description={"suggested_value": test_timeout},
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=60,
+                            max=900,
+                            unit_of_measurement="seconds",
+                        )
+                    ),
                 }
             ),
             description_placeholders={

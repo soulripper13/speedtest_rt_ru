@@ -39,7 +39,7 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 - **Lovelace cards** – two built-in cards (main + compact) auto-installed and registered on setup, removed on deletion
 - **Bilingual cards** – cards support English and Russian (`language: "en"` or `"ru"`)
 - **Diagnostics support** – troubleshoot issues via Settings > Integrations
-- **Timeout protection** – tests automatically timeout after 120 seconds
+- **Timeout protection** – tests automatically timeout after 300 seconds by default and can be adjusted in options
 - Fully compatible with Home Assistant and HACS
 - Works on **x86_64** and **ARM64 (aarch64)** systems
 - Requires **Home Assistant 2024.1+**
@@ -165,7 +165,7 @@ Sensors will then update only when the service is manually triggered or the butt
 ### Troubleshooting
 - **`Exec format error`** → Your system architecture is not supported. Only **x86_64** and **ARM64 (aarch64)** are supported.
 - **Binary download fails** → Check that [speedtest.rt.ru](https://speedtest.rt.ru) and `lib.qms.ru` are reachable from your HA host.
-- **Test hangs** → Tests automatically time out after 120 seconds.
+- **Test hangs** → Tests automatically time out after 300 seconds by default. Increase "Speedtest Timeout" in integration options if your server needs longer.
 - **Cards not appearing** → Go to **Settings → Devices & Services**, find the integration, and restart HA. Cards are registered automatically on setup.
 - Logs are available under **Settings → System → Logs**.
 
@@ -224,7 +224,7 @@ Thank you for being part of the Home Assistant community.
 - **Карточки Lovelace** – две встроенные карточки (основная и компактная) автоматически устанавливаются при настройке интеграции и удаляются вместе с ней
 - **Двуязычные карточки** – карточки поддерживают английский и русский язык (`language: "en"` или `"ru"`)
 - **Поддержка диагностики** – устранение неполадок через Настройки > Интеграции
-- **Защита от зависания** – тесты автоматически прерываются через 120 секунд
+- **Защита от зависания** – тесты автоматически прерываются через 300 секунд по умолчанию, значение можно изменить в настройках
 - Полная совместимость с Home Assistant и HACS
 - Работает на **x86_64** и **ARM64 (aarch64)** системах
 - Требует **Home Assistant 2024.1+**
@@ -350,7 +350,7 @@ entities:
 ### Устранение неполадок
 - Ошибка **`Exec format error`** → архитектура системы не поддерживается. Поддерживаются только **x86_64** и **ARM64 (aarch64)**.
 - **Ошибка загрузки бинарника** → проверьте доступность [speedtest.rt.ru](https://speedtest.rt.ru) и `lib.qms.ru` с вашего хоста HA.
-- **Тест зависает** → тесты автоматически прерываются через 120 секунд.
+- **Тест зависает** → тесты автоматически прерываются через 300 секунд по умолчанию. Увеличьте "Speedtest Timeout" в настройках интеграции, если выбранному серверу нужно больше времени.
 - **Карточки не появляются** → перейдите в **Настройки → Устройства и Сервисы**, найдите интеграцию и перезапустите HA. Карточки регистрируются автоматически при установке.
 - Логи доступны в **Настройки → Система → Журналы**.
 
