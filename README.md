@@ -4,12 +4,14 @@
 [![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)
 ![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
 [![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)
-![Logo](icon.png)
-![Logo](icon.png)
+[![Open HACS Repository][hacs-repo-badge]][hacs-repo]
+[![Add Integration][config-flow-badge]][config-flow]
+[![Открыть репозиторий HACS][hacs-repo-badge]][hacs-repo]
+[![Добавить интеграцию][config-flow-badge]][config-flow]
 [![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/soulripper13)
 
 <div align="center">
-  <img src="https://dummyimage.com/800x60/0d1117/ffffff&text=Speedtest+RT.RU+Integration+for+Home+Assistant+-+Speedtest+RT.RU+Integration+for+Home" alt="Hero Banner">
+  <img src="https://dummyimage.com/800x60/0d1117/ffffff&text=Speedtest+RT.RU+Integration+for+Home+Assistant+-+Speedtest+RT.RU+Integration+for+Home+Assistant" alt="Hero Banner">
   <br><br>
   <strong>Speedtest RT.RU Integration for Home Assistant</strong> 
   <br><br> 
@@ -18,11 +20,6 @@
     <img src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Speedtest RT.RU Integration for Home Assistant on Ko-fi" width="220">
   </a>
 </div>
-
----
-[![Community Forum][forum-shield]][forum]
-![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
-[![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)](#support-the-project)
 
 ---
 
@@ -67,10 +64,8 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 
 #### HACS installation (preferred)
 1. Search and download this integration via HACS, or click:
-   [![Open HACS Repository][hacs-repo-badge]][hacs-repo]
 2. Restart Home Assistant.
 3. Add the integration, or click:
-   [![Add Integration][config-flow-badge]][config-flow]
 
 #### Manual installation
 1. Copy the `custom_components/speedtest_rt_ru` folder to your `config/custom_components` directory.
@@ -186,12 +181,6 @@ Sensors will then update only when the service is manually triggered or the butt
 - **Cards not appearing** → Go to **Settings → Devices & Services**, find the integration, and restart HA. Cards are registered automatically on setup.
 - Logs are available under **Settings → System → Logs**.
 
----
-## Support the Project
-
-This project is developed and maintained in spare time and is provided free to the community.
-
-If you find it useful and would like to support ongoing development, maintenance, and improvements, any contribution is appreciated — but never required ❤️
 
 ### Ways to Support
 
@@ -276,10 +265,8 @@ Thank you for being part of the Home Assistant community.
 
 #### Установка через HACS (предпочтительно)
 1. Найдите и загрузите интеграцию через HACS, или нажмите:
-   [![Открыть репозиторий HACS][hacs-repo-badge]][hacs-repo]
 2. Перезапустите Home Assistant.
 3. Добавьте интеграцию, или нажмите:
-   [![Добавить интеграцию][config-flow-badge]][config-flow]
 
 #### Ручная установка
 1. Скопируйте папку `custom_components/speedtest_rt_ru` в `config/custom_components` вашего Home Assistant.
@@ -439,3 +426,60 @@ entities:
 [license-shield]: https://img.shields.io/github/license/soulripper13/speedtest_rt_ru?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/v/release/soulripper13/speedtest_rt_ru?style=for-the-badge
 [releases]: https://github.com/soulripper13/speedtest_rt_ru/releases
+
+### Ways to Support
+
+* **Ko-fi**
+  [https://ko-fi.com/soulripper13](https://ko-fi.com/soulripper13)
+
+* **PayPal**
+  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
+
+* **Bitcoin (BTC)**
+  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
+
+* **Solana (SOL)**
+  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
+
+You can also help by:
+
+* Reporting bugs
+* Submitting pull requests
+* Suggesting features
+* Helping other users
+* Starring the repository ⭐
+
+Thank you for being part of the community.
+
+---
+
+---
+## Support the Project
+
+This project is developed and maintained in spare time and is provided free to the community.
+
+If you find it useful and would like to support ongoing development, maintenance, and improvements, any contribution is appreciated — but never required ❤️
+
+### Ways to Support
+
+* **Ko-fi**
+  [https://ko-fi.com/soulripper13](https://ko-fi.com/soulripper13)
+
+* **PayPal**
+  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
+
+* **Bitcoin (BTC)**
+  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
+
+* **Solana (SOL)**
+  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
+
+You can also help by:
+
+* Reporting bugs
+* Submitting pull requests
+* Suggesting features
+* Helping other users
+* Starring the repository ⭐
+
+Thank you for being part of the community.
