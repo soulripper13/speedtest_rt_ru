@@ -1,33 +1,34 @@
 # Speedtest RT.RU Integration for Home Assistant
 
-[![License][license-shield]](LICENSE)
-[![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)
-![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
-[![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)
-[![Open HACS Repository][hacs-repo-badge]][hacs-repo]
-[![Add Integration][config-flow-badge]][config-flow]
-[![Открыть репозиторий HACS][hacs-repo-badge]][hacs-repo]
-[![Добавить интеграцию][config-flow-badge]][config-flow]
+[![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/hacs/default)
+[![GitHub Release](https://img.shields.io/github/release/soulripper13/speedtest_rt_ru.svg?style=for-the-badge)](https://github.com/soulripper13/speedtest_rt_ru/releases)
+[![GitHub Issues](https://img.shields.io/github/issues/soulripper13/speedtest_rt_ru.svg?style=for-the-badge)](https://github.com/soulripper13/speedtest_rt_ru/issues)
+![Downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
 [![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/soulripper13)
+[![Support via PayPal](https://img.shields.io/badge/Support-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/SKatoaroo)
 
 <div align="center">
-  <img src="https://dummyimage.com/800x60/0d1117/ffffff&text=Speedtest+RT.RU+Integration+for+Home+Assistant+-+Speedtest+RT.RU+Integration+for+Home+Assistant" alt="Hero Banner">
-  <br><br>
-  <strong>Speedtest RT.RU Integration for Home Assistant</strong> 
-  <br><br> 
-  <img src="icon.png" alt="Logo" style="width: 100px; height: auto;"><br><br>
-  <a href="https://ko-fi.com/soulripper13">
-    <img src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Speedtest RT.RU Integration for Home Assistant on Ko-fi" width="220">
+  <img src="icon.png" alt="Logo" width="120">
+  <h3>Speedtest RT.RU for Home Assistant</h3>
+  <p>A high-performance internet speed monitoring integration using the QMS binary from RT.RU.</p>
+  
+  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=soulripper13&repository=speedtest_rt_ru&category=integration">
+    <img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open in HACS">
+  </a>
+  <a href="https://my.home-assistant.io/redirect/config_flow_start/?domain=speedtest_rt_ru">
+    <img src="https://my.home-assistant.io/badges/config_flow_start.svg" alt="Add Integration">
   </a>
 </div>
 
 ---
 
+
+
+
 ## English
 
 **Speedtest RT.RU** is a Home Assistant integration that automatically downloads and runs the QMS binary from [RT.RU](https://speedtest.rt.ru) to measure your internet speed.
 
-![Logo](icon.png)
 
 It provides the following sensors and a button entity:
 - **Download** – download speed in Mbps
@@ -58,14 +59,13 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 - Works on **x86_64** and **ARM64 (aarch64)** systems
 - Requires **Home Assistant 2024.1+**
 
----
 
 ### Installation
 
 #### HACS installation (preferred)
-1. Search and download this integration via HACS, or click:
+1. Search and download this integration via **HACS**.
 2. Restart Home Assistant.
-3. Add the integration, or click:
+3. Add the integration via **Settings → Devices & Services → Add Integration**.
 
 #### Manual installation
 1. Copy the `custom_components/speedtest_rt_ru` folder to your `config/custom_components` directory.
@@ -73,7 +73,6 @@ All entities are grouped under a single **Speedtest RT.RU** device for easy mana
 3. Go to **Settings → Devices & Services → Add Integration → Speedtest RT.RU**.
 4. Configure the update interval or leave the default (30 minutes).
 
----
 
 ### Lovelace Cards
 
@@ -113,7 +112,6 @@ entities:
 
 Both cards have a visual editor accessible from the Lovelace card picker.
 
----
 
 ### Usage
 
@@ -172,7 +170,6 @@ Sensors will then update only when the service is manually triggered or the butt
 2. Find your Speedtest RT.RU integration.
 3. Click ⋮ and select **Download diagnostics**.
 
----
 
 ### Troubleshooting
 - **`Exec format error`** → Your system architecture is not supported. Only **x86_64** and **ARM64 (aarch64)** are supported.
@@ -180,278 +177,6 @@ Sensors will then update only when the service is manually triggered or the butt
 - **Test hangs** → Tests automatically time out after 300 seconds by default. Increase "Speedtest Timeout" in integration options if your server needs longer.
 - **Cards not appearing** → Go to **Settings → Devices & Services**, find the integration, and restart HA. Cards are registered automatically on setup.
 - Logs are available under **Settings → System → Logs**.
-
-
-### Ways to Support
-
-* **Ko-fi**
-  [https://ko-fi.com/soulripper13](https://ko-fi.com/soulripper13)
-
-* **PayPal**
-  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
-
-* **Bitcoin (BTC)**
-  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
-
-* **Solana (SOL)**
-  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
-
-You can also help by:
-
-* Reporting bugs
-* Submitting pull requests
-* Suggesting features
-* Helping other users
-* Starring the repository ⭐
-
-Thank you for being part of the community.
-
-
-### Ways to Support
-
-* **PayPal** – [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
-* **Bitcoin (BTC)** – `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
-* **Solana (SOL)** – `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
-
-You can also help by:
-* Reporting bugs
-* Submitting pull requests
-* Suggesting features
-* Helping other users
-* Starring the repository ⭐
-
-Thank you for being part of the Home Assistant community.
-
----
-
-## Русский
-
-**Speedtest RT.RU** — интеграция для Home Assistant, автоматически загружающая и запускающая бинарник QMS с [RT.RU](https://speedtest.rt.ru) для измерения скорости интернета.
-
-![Logo](icon.png)
-
-Интеграция предоставляет сенсоры и кнопку:
-- **Скорость загрузки** – в Мбит/с
-- **Скорость отдачи** – в Мбит/с
-- **Ping** – задержка сети в миллисекундах (в режиме ожидания)
-- **Jitter** – джиттер сети в миллисекундах
-- **ISP** – название вашего интернет-провайдера
-- **Server** – используемый сервер Speedtest
-- **IP** – ваш публичный IP-адрес
-- **Result URL** – ссылка на полный результат теста на qms.ru
-- **Last Test** – время последнего завершённого теста
-- **Run Speedtest** (кнопка) – ручной запуск теста скорости
-- 2 дополнительных сенсора задержки: пинг при загрузке и при отдаче (отключены по умолчанию)
-
-Все сущности объединены в одно устройство **Speedtest RT.RU** для удобного управления.
-
-### Возможности
-- Встроенный бинарник QMS с резервной загрузкой при установке вручную
-- **Обновление бинарника в репозитории** – GitHub Actions проверяет upstream-бинарники QMS и обновляет packaged-файлы через pull request
-- **Выбор сервера** – выбор из доступных серверов или автоматический подбор
-- Настраиваемый интервал обновления через UI Home Assistant
-- **Кнопка запуска** – запуск теста прямо из интерфейса
-- **Карточки Lovelace** – две встроенные карточки (основная и компактная) автоматически устанавливаются при настройке интеграции и удаляются вместе с ней
-- **Двуязычные карточки** – карточки поддерживают английский и русский язык (`language: "en"` или `"ru"`)
-- **Поддержка диагностики** – устранение неполадок через Настройки > Интеграции
-- **Защита от зависания** – тесты автоматически прерываются через 300 секунд по умолчанию, значение можно изменить в настройках
-- Полная совместимость с Home Assistant и HACS
-- Работает на **x86_64** и **ARM64 (aarch64)** системах
-- Требует **Home Assistant 2024.1+**
-
----
-
-### Установка
-
-#### Установка через HACS (предпочтительно)
-1. Найдите и загрузите интеграцию через HACS, или нажмите:
-2. Перезапустите Home Assistant.
-3. Добавьте интеграцию, или нажмите:
-
-#### Ручная установка
-1. Скопируйте папку `custom_components/speedtest_rt_ru` в `config/custom_components` вашего Home Assistant.
-2. Перезапустите Home Assistant.
-3. Перейдите в **Настройки → Устройства и Сервисы → Добавить интеграцию → Speedtest RT.RU**.
-4. Настройте интервал обновления или оставьте значение по умолчанию (30 минут).
-
----
-
-### Карточки Lovelace
-
-Две карточки автоматически устанавливаются и регистрируются при настройке интеграции, а при её удалении — удаляются.
-
-#### Основная карточка (`custom:speedtest-rt-ru-card`)
-Полнофункциональная карточка с двумя радиальными датчиками для загрузки и отдачи, показателями пинга и джиттера, именем провайдера, информацией о сервере, IP-адресом, ссылкой на результат и временем последнего теста.
-
-```yaml
-type: custom:speedtest-rt-ru-card
-language: ru   # или "en" для английских подписей
-entities:
-  download: sensor.speedtest_rt_ru_download
-  upload: sensor.speedtest_rt_ru_upload
-  ping: sensor.speedtest_rt_ru_ping
-  jitter: sensor.speedtest_rt_ru_jitter
-  isp: sensor.speedtest_rt_ru_isp
-  server: sensor.speedtest_rt_ru_server
-  result_url: sensor.speedtest_rt_ru_result_url
-  last_test: sensor.speedtest_rt_ru_last_test
-  ip: sensor.speedtest_rt_ru_ip
-max_download: 1000
-max_upload: 500
-```
-
-#### Компактная карточка (`custom:speedtest-rt-ru-compact`)
-Минималистичная однострочная карточка — идеальна для боковых панелей и компактных дэшбордов.
-
-```yaml
-type: custom:speedtest-rt-ru-compact
-language: ru   # или "en" для английских подписей
-entities:
-  download: sensor.speedtest_rt_ru_download
-  upload: sensor.speedtest_rt_ru_upload
-  ping: sensor.speedtest_rt_ru_ping
-```
-
-Обе карточки имеют визуальный редактор, доступный из меню выбора карточек Lovelace.
-
----
-
-### Использование
-
-После установки будут доступны следующие сенсоры и одна кнопка, объединённые в устройство "Speedtest RT.RU":
-- `sensor.speedtest_rt_ru_download`
-- `sensor.speedtest_rt_ru_upload`
-- `sensor.speedtest_rt_ru_ping`
-- `sensor.speedtest_rt_ru_jitter`
-- `sensor.speedtest_rt_ru_isp`
-- `sensor.speedtest_rt_ru_server`
-- `sensor.speedtest_rt_ru_ip`
-- `sensor.speedtest_rt_ru_result_url`
-- `sensor.speedtest_rt_ru_last_test`
-- `button.speedtest_rt_ru_run_speedtest`
-
-Дополнительные сенсоры задержки (отключены по умолчанию, включить в настройках объектов):
-- `sensor.speedtest_rt_ru_ping_during_download` — задержка во время фазы загрузки
-- `sensor.speedtest_rt_ru_ping_during_upload` — задержка во время фазы отдачи
-
-Используйте их в автоматизациях, Lovelace-дэшбордах и для мониторинга соединения.
-
-#### Выбор сервера
-1. Перейдите в **Настройки → Устройства и Сервисы**.
-2. Найдите интеграцию Speedtest RT.RU.
-3. Нажмите ⚙️ **Настроить**.
-4. Выберите сервер из выпадающего списка **Тестовый сервер**:
-   - **Auto (Best Server)** – автоматический выбор лучшего сервера
-   - Или выберите конкретный сервер по городу (например, "Хабаровск - khabarovsk1.qms.ru")
-5. Сохраните изменения. Интеграция перезагрузится автоматически.
-
-#### Ручной запуск теста
-
-**Способ 1: Кнопка (рекомендуется)**
-Нажмите кнопку "Run Speedtest" в панели устройства или на карточке Lovelace.
-
-**Способ 2: Вызов сервиса**
-Интеграция предоставляет сервис `speedtest_rt_ru.perform_test`:
-1. Перейдите в **Инструменты разработчика → Сервисы**.
-2. Выберите `speedtest_rt_ru.perform_test`.
-3. Вызовите сервис (параметры не требуются).
-
-#### Обновление бинарника
-Обновления бинарника QMS выполняются через GitHub Actions в этом репозитории. Workflow проверяет upstream-бинарники RT.RU, обновляет packaged-файлы `qms_lib` при изменениях и открывает pull request.
-
-#### Отключение автоматических тестов скорости
-1. Перейдите в **Настройки → Устройства и Сервисы**.
-2. Найдите интеграцию Speedtest RT.RU.
-3. Нажмите ⚙️ **Настроить**.
-4. Отключите «Включить автоматические обновления» или установите большой интервал.
-5. Сохраните изменения.
-
-Сенсоры будут обновляться только при ручном вызове сервиса или нажатии кнопки.
-
-#### Диагностика
-1. Перейдите в **Настройки → Устройства и Сервисы**.
-2. Найдите интеграцию Speedtest RT.RU.
-3. Нажмите ⋮ и выберите **Скачать диагностику**.
-
----
-
-### Устранение неполадок
-- Ошибка **`Exec format error`** → архитектура системы не поддерживается. Поддерживаются только **x86_64** и **ARM64 (aarch64)**.
-- **Ошибка загрузки бинарника** → проверьте доступность [speedtest.rt.ru](https://speedtest.rt.ru) и `lib.qms.ru` с вашего хоста HA.
-- **Тест зависает** → тесты автоматически прерываются через 300 секунд по умолчанию. Увеличьте "Speedtest Timeout" в настройках интеграции, если выбранному серверу нужно больше времени.
-- **Карточки не появляются** → перейдите в **Настройки → Устройства и Сервисы**, найдите интеграцию и перезапустите HA. Карточки регистрируются автоматически при установке.
-- Логи доступны в **Настройки → Система → Журналы**.
-
----
-
-### Поддержите проект
-
-Эта интеграция разрабатывается и поддерживается в свободное время и предоставляется бесплатно сообществу Home Assistant. Если вы находите её полезной, любая помощь будет высоко оценена — но никогда не обязательна ❤️
-
-### Способы поддержки
-
-* **PayPal** – [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
-* **Bitcoin (BTC)** – `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
-* **Solana (SOL)** – `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
-
-Вы также можете помочь:
-* Сообщая об ошибках
-* Отправляя pull-запросы
-* Предлагая новые функции
-* Помогая другим пользователям
-* Поставив звёздочку репозиторию ⭐
-
-Спасибо, что вы часть сообщества Home Assistant!
-
----
-
-## Links and Credits
-- [RT.RU Speedtest](https://speedtest.rt.ru)
-- [Home Assistant](https://www.home-assistant.io)
-- [HACS Integration Guide](https://hacs.xyz/docs/faq/custom_repositories/)
-- Developed by [soulripper13](https://github.com/soulripper13)
-
----
-
-[hacs]: https://github.com/hacs/integration
-[hacsbadge]: https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge
-[hacs-repo-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
-[hacs-repo]: https://my.home-assistant.io/redirect/hacs_repository/?owner=soulripper13&repository=speedtest_rt_ru&category=integration
-[config-flow-badge]: https://my.home-assistant.io/badges/config_flow_start.svg
-[config-flow]: https://my.home-assistant.io/redirect/config_flow_start?domain=speedtest_rt_ru
-[commits-shield]: https://img.shields.io/github/commit-activity/m/soulripper13/speedtest_rt_ru?style=for-the-badge
-[commits]: https://github.com/soulripper13/speedtest_rt_ru/commits/main
-[forum-shield]: https://img.shields.io/badge/Community-Forum-blue?style=for-the-badge&logo=home-assistant
-[forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/soulripper13/speedtest_rt_ru?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/v/release/soulripper13/speedtest_rt_ru?style=for-the-badge
-[releases]: https://github.com/soulripper13/speedtest_rt_ru/releases
-
-### Ways to Support
-
-* **Ko-fi**
-  [https://ko-fi.com/soulripper13](https://ko-fi.com/soulripper13)
-
-* **PayPal**
-  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
-
-* **Bitcoin (BTC)**
-  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
-
-* **Solana (SOL)**
-  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
-
-You can also help by:
-
-* Reporting bugs
-* Submitting pull requests
-* Suggesting features
-* Helping other users
-* Starring the repository ⭐
-
-Thank you for being part of the community.
-
----
 
 ---
 ## Support the Project
