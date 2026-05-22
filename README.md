@@ -1,8 +1,25 @@
 # Speedtest RT.RU Integration for Home Assistant
-[![HACS Badge][hacsbadge]][hacs]
-[![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
+
 [![License][license-shield]](LICENSE)
+[![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)
+![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
+[![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)
+![Logo](icon.png)
+![Logo](icon.png)
+[![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/soulripper13)
+
+<div align="center">
+  <img src="https://dummyimage.com/800x60/0d1117/ffffff&text=Speedtest+RT.RU+Integration+for+Home+Assistant+-+Speedtest+RT.RU+Integration+for+Home" alt="Hero Banner">
+  <br><br>
+  <strong>Speedtest RT.RU Integration for Home Assistant</strong> 
+  <br><br> 
+  <img src="icon.png" alt="Logo" style="width: 100px; height: auto;"><br><br>
+  <a href="https://ko-fi.com/soulripper13">
+    <img src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" alt="Support Speedtest RT.RU Integration for Home Assistant on Ko-fi" width="220">
+  </a>
+</div>
+
+---
 [![Community Forum][forum-shield]][forum]
 ![Integration Usage](https://img.shields.io/badge/dynamic/json?color=orange&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
 [![Support Development](https://img.shields.io/badge/Support-Development-FFDD00?style=for-the-badge&logo=paypal&logoColor=black)](#support-the-project)
@@ -170,12 +187,36 @@ Sensors will then update only when the service is manually triggered or the butt
 - Logs are available under **Settings → System → Logs**.
 
 ---
-
 ## Support the Project
 
-This integration is developed and maintained in spare time and provided free to the Home Assistant community.
+This project is developed and maintained in spare time and is provided free to the community.
 
-If you find it useful, any contribution is appreciated — but never required ❤️
+If you find it useful and would like to support ongoing development, maintenance, and improvements, any contribution is appreciated — but never required ❤️
+
+### Ways to Support
+
+* **Ko-fi**
+  [https://ko-fi.com/soulripper13](https://ko-fi.com/soulripper13)
+
+* **PayPal**
+  [https://paypal.me/SKatoaroo](https://paypal.me/SKatoaroo)
+
+* **Bitcoin (BTC)**
+  `bc1qvu8a9gdy3dcxa94jge7d3rd7claapsydjsjxn0`
+
+* **Solana (SOL)**
+  `4jvCR2YFQLqguoyz9qAMPzVbaEcDsG5nzRHFG8SeaeBK`
+
+You can also help by:
+
+* Reporting bugs
+* Submitting pull requests
+* Suggesting features
+* Helping other users
+* Starring the repository ⭐
+
+Thank you for being part of the community.
+
 
 ### Ways to Support
 
