@@ -2,12 +2,17 @@
 
 [![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/hacs/default)
 [![GitHub Release](https://img.shields.io/github/release/soulripper13/speedtest_rt_ru.svg?style=for-the-badge)](https://github.com/soulripper13/speedtest_rt_ru/releases)
+[![GitHub License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/soulripper13/speedtest_rt_ru.svg?style=for-the-badge)](https://github.com/soulripper13/speedtest_rt_ru/issues)
+[![GitHub Stars](https://img.shields.io/badge/Stars-10-blue.svg?style=for-the-badge&logo=github)](https://github.com/soulripper13/speedtest_rt_ru/stargazers)
+![Maintenance](https://img.shields.io/maintenance/yes/2026.svg?style=for-the-badge)
 ![Downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=Downloads&suffix=%20installs&cacheSeconds=15600&style=for-the-badge&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.speedtest_rt_ru.total)
 [![Support Development](https://img.shields.io/badge/Support-Development-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/soulripper13)
 [![Support via PayPal](https://img.shields.io/badge/Support-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/SKatoaroo)
 
 <div align="center">
+  <img src="https://dummyimage.com/800x60/0d1117/ffffff&text=Speedtest%20RT.RU%20Integration%20for%20Home%20Assistant+-+%2A%2ASpeedtest%20RT.RU%2A%2A%20is%20a%20Home%20Assistant%20integratio..." alt="Hero Banner">
+  <br><br>
   <img src="icon.png" alt="Logo" width="120">
   <h3>Speedtest RT.RU for Home Assistant</h3>
   <p>A high-performance internet speed monitoring integration using the QMS binary from RT.RU.</p>
