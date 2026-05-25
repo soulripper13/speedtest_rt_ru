@@ -117,7 +117,7 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._binary_path = binary_path
         self.entry = entry
 
-        # Get server_id from options or data
+        # Get settings from options or initial config data.
         options = entry.options
         self._server_id = options.get(
             CONF_SERVER_ID,
@@ -129,9 +129,15 @@ class SpeedtestCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         ))
 
         # Set update interval based on options (no polling if auto_update=False)
-        auto_update = options.get(CONF_AUTO_UPDATE, True)
+        auto_update = options.get(
+            CONF_AUTO_UPDATE,
+            entry.data.get(CONF_AUTO_UPDATE, True)
+        )
         interval = timedelta(
-            seconds=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            seconds=options.get(
+                CONF_SCAN_INTERVAL,
+                entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            )
         ) if auto_update else None
 
         super().__init__(
