@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   update:
@@ -15,6 +14,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download QMS binaries
         shell: bash
@@ -74,14 +75,116 @@ jobs:
           (root / "SHA256SUMS").write_text("\n".join(checksums) + "\n")
           PY
 
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: update/qms-binaries
-          commit-message: "Update RT.RU QMS binaries"
-          title: "Update RT.RU QMS binaries"
-          body: |
-            Updates the bundled RT.RU QMS binaries used by the Home Assistant integration.
+      - name: Check for binary updates
+        id: binary_updates
+        shell: bash
+        run: |
+          set -euo pipefail
 
-            The integration no longer checks for or installs binary updates at runtime; updates are handled in the repository by this workflow.
-          delete-branch: true
+          if git diff --quiet -- custom_components/speedtest_rt_ru/bin; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump manifest version
+        if: steps.binary_updates.outputs.changed == 'true'
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          manifest_path = Path("custom_components/speedtest_rt_ru/manifest.json")
+          manifest = json.loads(manifest_path.read_text())
+          current_version = manifest["version"]
+          parts = current_version.split(".")
+
+          if len(parts) != 3 or not all(part.isdigit() for part in parts):
+              raise ValueError(
+                  f"Expected semantic version like 1.2.3, got {current_version}"
+              )
+
+          major, minor, patch = (int(part) for part in parts)
+          existing_tags = set(
+              subprocess.check_output(
+                  ["git", "tag", "--list"],
+                  text=True,
+              ).splitlines()
+          )
+
+          while True:
+              patch += 1
+              new_version = f"{major}.{minor}.{patch}"
+              tag = f"v{new_version}"
+              if tag not in existing_tags:
+                  break
+
+          manifest["version"] = new_version
+          manifest_path.write_text(
+              json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
+          )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"version={new_version}\n")
+              output.write(f"tag={tag}\n")
+          PY
+
+      - name: Commit update
+        if: steps.binary_updates.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add custom_components/speedtest_rt_ru/bin custom_components/speedtest_rt_ru/manifest.json
+          git commit -m "Update RT.RU QMS binaries to ${{ steps.version.outputs.version }}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Create tag
+        if: steps.binary_updates.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Create release notes
+        if: steps.binary_updates.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          {
+            echo "Updates the bundled RT.RU QMS binaries used by the Home Assistant integration."
+            echo
+            echo "Manifest version: ${{ steps.version.outputs.version }}"
+            echo
+            echo "SHA256 checksums:"
+            echo '```'
+            cat custom_components/speedtest_rt_ru/bin/SHA256SUMS
+            echo '```'
+          } > /tmp/qms-release-notes.md
+
+      - name: Create GitHub release
+        if: steps.binary_updates.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes-file /tmp/qms-release-notes.md
+
+      - name: No update found
+        if: steps.binary_updates.outputs.changed != 'true'
+        run: echo "QMS binaries are already up to date."
