@@ -159,7 +159,7 @@ The integration exposes the service `speedtest_rt_ru.perform_test`:
 3. Call the service (no parameters required).
 
 #### Binary Updates
-QMS binary updates are handled by a GitHub Actions workflow in this repository. The workflow checks the upstream RT.RU binaries, updates the packaged `qms_lib` files when they change, and opens a pull request.
+QMS binary updates are handled by a GitHub Actions workflow in this repository. The workflow checks the upstream RT.RU binaries, updates the packaged `qms_lib` files when they change, bumps the integration manifest version, and creates a GitHub release.
 
 #### Disable Automatic Speedtest Updates
 1. Go to **Settings → Devices & Services**.
