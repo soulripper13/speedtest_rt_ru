@@ -1,8 +1,12 @@
 {
   "domain": "speedtest_rt_ru",
   "name": "Speedtest RT.RU",
-  "after_dependencies": ["lovelace"],
-  "codeowners": ["@soulripper13"],
+  "after_dependencies": [
+    "lovelace"
+  ],
+  "codeowners": [
+    "@soulripper13"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/soulripper13/speedtest_rt_ru",
@@ -10,5 +14,5 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/soulripper13/speedtest_rt_ru/issues",
   "requirements": [],
-  "version": "1.3.4"
+  "version": "1.3.5"
 }
